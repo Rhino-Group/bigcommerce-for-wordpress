@@ -40,7 +40,27 @@ phpdoc.json
 *.log
 *.sql
 
+# Source files #
+#######################
+assets/js/src/*
+assets/js/test/*
+assets/pcss/*
+
 # Local configuration #
 #######################
 
 local-config.json
+.babelrc
+.editorconfig
+.eslintrc
+.nvmrc
+.stylelintrc.json
+composer.json
+composer.lock
+Gruntfile.js
+package.json
+webpack.config.js
+yarn.lock
+
+dev_components/*
+grunt_options/*
