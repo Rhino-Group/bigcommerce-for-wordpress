@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name:  BigCommerce for WordPress
+Plugin Name:  BigCommerce for WordPress (Suma)
 Description:  Scale your ecommerce business with WordPress on the front-end and BigCommerce on the back end. Free up server resources from things like catalog management, processing payments, and managing fulfillment logistics.
 Author:       BigCommerce
-Version:      5.0.7
+Version:      5.0.7.1
 Author URI:   https://www.bigcommerce.com/wordpress
 Requires PHP: 7.4.0
 Text Domain:  bigcommerce
@@ -161,3 +161,20 @@ function bigcommerce_get_primary_channel_status() {
 
     return $status;
 }
+
+/**
+ * Rhino Group
+ * Attach plugin update checker to our custom repo
+ */
+add_action( 'plugins_loaded', function() {
+
+	$myUpdateChecker = YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+		'https://github.com/Rhino-Group/bigcommerce-for-wordpress/',
+		__FILE__,
+		'bigcommerce-suma'
+	);
+
+	//Set the branch that contains the stable release.
+	$myUpdateChecker->setBranch('release');
+
+}, 9999 );
