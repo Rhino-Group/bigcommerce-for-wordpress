@@ -184,22 +184,6 @@ class Pricing_Controller extends Rest_Controller {
 			'formatted' => $this->format_currency( $retail_value ),
 		];
 
-		if ( $min_value != $max_value ) {
-			$return_data['display_type'] = 'price_range';
-			$return_data['price_range']  = [
-				'min' => [
-					'raw'       => $min_value,
-					'formatted' => $this->format_currency( $min_value ),
-				],
-				'max' => [
-					'raw'       => $max_value,
-					'formatted' => $this->format_currency( $max_value ),
-				],
-			];
-
-			return $return_data;
-		}
-
 		$return_data['display_type']     = 'simple';
 		$return_data['calculated_price'] = [
 			'raw'       => $calculated_value,
@@ -215,6 +199,24 @@ class Pricing_Controller extends Rest_Controller {
 				'raw'       => $original_value,
 				'formatted' => $this->format_currency( $original_value ),
 			];
+
+			return $return_data;
+		}
+
+		if ( $min_value != $max_value ) {
+			$return_data['display_type'] = 'price_range';
+			$return_data['price_range']  = [
+				'min' => [
+					'raw'       => $min_value,
+					'formatted' => $this->format_currency( $min_value ),
+				],
+				'max' => [
+					'raw'       => $max_value,
+					'formatted' => $this->format_currency( $max_value ),
+				],
+			];
+
+			return $return_data;
 		}
 
 		return $return_data;
