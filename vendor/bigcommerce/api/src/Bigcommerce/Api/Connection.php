@@ -266,7 +266,6 @@ class Connection
         curl_setopt($this->curl, CURLOPT_HTTPGET, false);
 
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, $this->headers);
-		$this->verifyPeer(false);
     }
 
     /**
