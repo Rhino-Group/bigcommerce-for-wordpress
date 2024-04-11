@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.0.7.3]
+- Feature Added the ability to reimport images from scratch when switching from Import Image Url to Full Image Import.
+
+## [5.0.7.2]
+- Fix Moved sale price check above the range price check in order to display sale price on products that have a price range.
+
+## [5.0.7.1]
+- Added PUC Support
+
 ## [5.0.7]
 
 ### Fixed

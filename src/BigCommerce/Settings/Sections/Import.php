@@ -20,6 +20,7 @@ class Import extends Settings_Section {
 	const ENABLE_PRODUCTS_WEBHOOKS = 'bigcommerce_import_enable_webhooks';
 	const ENABLE_CUSTOMER_WEBHOOKS = 'bigcommerce_import_enable_customer_webhooks';
 	const ENABLE_IMAGE_IMPORT      = 'bigcommerce_import_enable_image_import';
+	const ENABLE_IMAGE_OVERWRITE_IMPORT      = 'bigcommerce_import_enable_image_overwrite_import';
 	const MAX_CONCURRENT           = 'bigcommerce_import_max_concurrent';
 	const RUN_IN_PARALLEL          = 'bigcommerce_parallel_run';
 	const HEADLESS_FLAG            = 'bigcommerce_headless_flag';
@@ -167,6 +168,21 @@ class Import extends Settings_Section {
 				'type'   => 'radio',
 				'option' => self::ENABLE_IMAGE_IMPORT,
 				'label'  => __( 'Allow product images import', 'bigcommerce' ),
+			]
+		);
+		register_setting(
+			Settings_Screen::NAME,
+			self::ENABLE_IMAGE_OVERWRITE_IMPORT
+		);
+
+		add_settings_field(
+			self::ENABLE_IMAGE_OVERWRITE_IMPORT,
+			esc_html( __( 'Delete and Recreate Images', 'bigcommerce' ) ),
+			[ $this, 'render_image_import_overwrite_checkbox', ],
+			Settings_Screen::NAME,
+			self::NAME,
+			[
+				'label_for' => 'field-' . self::ENABLE_IMAGE_OVERWRITE_IMPORT,
 			]
 		);
 
@@ -350,6 +366,17 @@ class Import extends Settings_Section {
 			esc_html( __( "Import processing in parallel for fetching listings, products, channel initialization", 'bigcommerce' ) )
 		);
 		echo '</fieldset>';
+	}
+
+	public function render_image_import_overwrite_checkbox() {
+		$value     = (bool) get_option( self::ENABLE_IMAGE_OVERWRITE_IMPORT, true );
+		$checkbox  = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::ENABLE_IMAGE_OVERWRITE_IMPORT ), esc_attr( self::ENABLE_IMAGE_OVERWRITE_IMPORT ), checked( true, $value, false ));
+			$description = __( 'Deletes existing images during import and reimports them from scratch. Useful when switching the Images Import from Import images URLs only to Full images import.', 'bigcommerce' );
+		printf( '<p class="description">%s %s</p>', $checkbox, sprintf(
+			$description,
+			sprintf( '<a target="__blank" href="%s">', esc_url( 'https://login.bigcommerce.com/deep-links/manage/settings/store' ) ),
+			'</a>'
+		) );
 	}
 
 }
