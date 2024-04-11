@@ -1,4 +1,6 @@
 # Changelog
+## [5.0.7.4]
+- Fix - Set Image Delete on Import to 0 by default.
 
 ## [5.0.7.3]
 - Feature Added the ability to reimport images from scratch when switching from Import Image Url to Full Image Import.
