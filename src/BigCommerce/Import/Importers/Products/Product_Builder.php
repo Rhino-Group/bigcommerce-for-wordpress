@@ -281,7 +281,7 @@ class Product_Builder {
 				'fields'         => 'ids',
 				'posts_per_page' => 1,
 			] );
-			if($image_overwrite === 1){
+			if($image_overwrite === "1"){
 				foreach( $existing as $existing_id){
 					wp_delete_post($existing_id);
 				}
@@ -324,7 +324,7 @@ class Product_Builder {
 					   AND m.meta_value=%s ORDER BY p.ID ASC LIMIT 1",
 					$image_url
 				) );
-				if($image_overwrite === 1){
+				if($image_overwrite === "1"){
 					if ( ! empty( $existing ) ) {
 						wp_delete_post( $existing );
 						$existing = [];
