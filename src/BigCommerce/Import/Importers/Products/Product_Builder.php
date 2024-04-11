@@ -44,6 +44,8 @@ class Product_Builder {
 	 */
 	private $channel_term;
 
+	const ENABLE_IMAGE_OVERWRITE_IMPORT      = 'bigcommerce_import_enable_image_overwrite_import';
+
 	/**
 	 * Product_Builder constructor.
 	 *
@@ -252,6 +254,8 @@ class Product_Builder {
 			return $response;
 		}
 
+		$image_overwrite = get_option(Product_Builder::ENABLE_IMAGE_OVERWRITE_IMPORT);
+
 		$images = $this->product[ 'images' ];
 
 		usort( $images, function ( $a, $b ) {
@@ -277,6 +281,13 @@ class Product_Builder {
 				'fields'         => 'ids',
 				'posts_per_page' => 1,
 			] );
+			if($image_overwrite === 1){
+				foreach( $existing as $existing_id){
+					wp_delete_post($existing_id);
+				}
+				$existing = [];
+			}
+
 			if ( ! empty( $existing ) ) {
 				$post_id = reset( $existing );
 			} else {
@@ -313,6 +324,13 @@ class Product_Builder {
 					   AND m.meta_value=%s ORDER BY p.ID ASC LIMIT 1",
 					$image_url
 				) );
+				if($image_overwrite === 1){
+					if ( ! empty( $existing ) ) {
+						wp_delete_post( $existing );
+						$existing = [];
+					}
+				}
+
 				if ( ! empty( $existing ) ) {
 					$post_id = (int) $existing;
 				} else {
