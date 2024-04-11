@@ -370,7 +370,7 @@ class Import extends Settings_Section {
 
 	public function render_image_import_overwrite_checkbox() {
 		$value     = (bool) get_option( self::ENABLE_IMAGE_OVERWRITE_IMPORT, true );
-		$checkbox  = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::ENABLE_IMAGE_OVERWRITE_IMPORT ), esc_attr( self::ENABLE_IMAGE_OVERWRITE_IMPORT ), checked( true, $value, false ));
+		$checkbox  = sprintf( '<input id="field-%s" type="checkbox" value="0" class="regular-text code" name="%s" %s />', esc_attr( self::ENABLE_IMAGE_OVERWRITE_IMPORT ), esc_attr( self::ENABLE_IMAGE_OVERWRITE_IMPORT ), checked( true, $value, false ));
 			$description = __( 'Deletes existing images during import and reimports them from scratch. Useful when switching the Images Import from Import images URLs only to Full images import.', 'bigcommerce' );
 		printf( '<p class="description">%s %s</p>', $checkbox, sprintf(
 			$description,
