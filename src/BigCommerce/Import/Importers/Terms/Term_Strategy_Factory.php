@@ -79,6 +79,9 @@ class Term_Strategy_Factory {
 		 * @param array         $bc_term  The term data from the API
 		 * @param string        $version  The version of the importer
 		 */
+		if(get_option('bigcommerce_import_enable_category_force_refresh') === "1") {
+			return true;
+		}
 		return apply_filters( 'bigcommerce/import/strategy/term/needs_refresh', $response, $term_id, $this->bc_term, Import_Strategy::VERSION );
 	}
 }

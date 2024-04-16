@@ -1,4 +1,9 @@
 # Changelog
+## [5.0.7.5]
+
+### Added
+- Feature - Added Settings to force refresh products and categories. When checked all categories and products will get updated without having to change them.
+
 ## [5.0.7.4]
 
 ### Fixed

@@ -21,6 +21,8 @@ class Import extends Settings_Section {
 	const ENABLE_CUSTOMER_WEBHOOKS = 'bigcommerce_import_enable_customer_webhooks';
 	const ENABLE_IMAGE_IMPORT      = 'bigcommerce_import_enable_image_import';
 	const ENABLE_IMAGE_OVERWRITE_IMPORT      = 'bigcommerce_import_enable_image_overwrite_import';
+	const ENABLE_PRODUCT_FORCE_REFRESH      = 'bigcommerce_import_enable_product_force_refresh';
+	const ENABLE_CATEGORY_FORCE_REFRESH      = 'bigcommerce_import_enable_category_force_refresh';
 	const MAX_CONCURRENT           = 'bigcommerce_import_max_concurrent';
 	const RUN_IN_PARALLEL          = 'bigcommerce_parallel_run';
 	const HEADLESS_FLAG            = 'bigcommerce_headless_flag';
@@ -183,6 +185,36 @@ class Import extends Settings_Section {
 			self::NAME,
 			[
 				'label_for' => 'field-' . self::ENABLE_IMAGE_OVERWRITE_IMPORT,
+			]
+		);
+		register_setting(
+			Settings_Screen::NAME,
+			self::ENABLE_PRODUCT_FORCE_REFRESH
+		);
+
+		add_settings_field(
+			self::ENABLE_PRODUCT_FORCE_REFRESH,
+			esc_html( __( 'Force Refresh Products', 'bigcommerce' ) ),
+			[ $this, 'render_enable_product_force_refresh_checkbox', ],
+			Settings_Screen::NAME,
+			self::NAME,
+			[
+				'label_for' => 'field-' . self::ENABLE_PRODUCT_FORCE_REFRESH,
+			]
+		);
+		register_setting(
+			Settings_Screen::NAME,
+			self::ENABLE_CATEGORY_FORCE_REFRESH
+		);
+
+		add_settings_field(
+			self::ENABLE_CATEGORY_FORCE_REFRESH,
+			esc_html( __( 'Force Refresh Categories', 'bigcommerce' ) ),
+			[ $this, 'render_enable_category_force_refresh_checkbox', ],
+			Settings_Screen::NAME,
+			self::NAME,
+			[
+				'label_for' => 'field-' . self::ENABLE_CATEGORY_FORCE_REFRESH,
 			]
 		);
 
@@ -369,9 +401,30 @@ class Import extends Settings_Section {
 	}
 
 	public function render_image_import_overwrite_checkbox() {
-		$value     = (bool) get_option( self::ENABLE_IMAGE_OVERWRITE_IMPORT, true );
-		$checkbox  = sprintf( '<input id="field-%s" type="checkbox" value="0" class="regular-text code" name="%s" %s />', esc_attr( self::ENABLE_IMAGE_OVERWRITE_IMPORT ), esc_attr( self::ENABLE_IMAGE_OVERWRITE_IMPORT ), checked( true, $value, false ));
+		$value     = (bool) get_option( self::ENABLE_IMAGE_OVERWRITE_IMPORT, false );
+		$checkbox  = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::ENABLE_IMAGE_OVERWRITE_IMPORT ), esc_attr( self::ENABLE_IMAGE_OVERWRITE_IMPORT ), checked( true, $value, false ));
 			$description = __( 'Deletes existing images during import and reimports them from scratch. Useful when switching the Images Import from Import images URLs only to Full images import.', 'bigcommerce' );
+		printf( '<p class="description">%s %s</p>', $checkbox, sprintf(
+			$description,
+			sprintf( '<a target="__blank" href="%s">', esc_url( 'https://login.bigcommerce.com/deep-links/manage/settings/store' ) ),
+			'</a>'
+		) );
+	}
+
+	public function render_enable_product_force_refresh_checkbox() {
+		$value     = (bool) get_option( self::ENABLE_PRODUCT_FORCE_REFRESH, false );
+		$checkbox  = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::ENABLE_PRODUCT_FORCE_REFRESH ), esc_attr( self::ENABLE_PRODUCT_FORCE_REFRESH ), checked( true, $value, false ));
+		$description = __( 'Force Marks all Products for Product_Updater Strategy. Useful when things did not properly import on first go through.', 'bigcommerce' );
+		printf( '<p class="description">%s %s</p>', $checkbox, sprintf(
+			$description,
+			sprintf( '<a target="__blank" href="%s">', esc_url( 'https://login.bigcommerce.com/deep-links/manage/settings/store' ) ),
+			'</a>'
+		) );
+	}
+	public function render_enable_category_force_refresh_checkbox() {
+		$value     = (bool) get_option( self::ENABLE_CATEGORY_FORCE_REFRESH, false );
+		$checkbox  = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::ENABLE_CATEGORY_FORCE_REFRESH ), esc_attr( self::ENABLE_CATEGORY_FORCE_REFRESH ), checked( true, $value, false ));
+		$description = __( 'Force Marks all Categories for Term_Updater Strategy. Useful when things did not properly import on first go through.', 'bigcommerce' );
 		printf( '<p class="description">%s %s</p>', $checkbox, sprintf(
 			$description,
 			sprintf( '<a target="__blank" href="%s">', esc_url( 'https://login.bigcommerce.com/deep-links/manage/settings/store' ) ),
