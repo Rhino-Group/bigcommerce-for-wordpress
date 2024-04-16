@@ -121,6 +121,9 @@ class Product_Strategy_Factory {
 		 * @param Model\Listing $listing  The channel listing data from the API
 		 * @param string        $version  The version of the importer
 		 */
+		if(get_option('bigcommerce_import_enable_product_force_refresh') === "1") {
+			return true;
+		}
 		return apply_filters( 'bigcommerce/import/strategy/needs_refresh', $response, $post_id, $this->product, $this->listing, $this->version );
 	}
 }
