@@ -1,4 +1,9 @@
 # Changelog
+
+## [5.0.7.6]
+
+### Added
+ - Feature - Added setting + hook to disable the REST API requests for real-time product price refreshes.
 ## [5.0.7.5]
 
 ### Added

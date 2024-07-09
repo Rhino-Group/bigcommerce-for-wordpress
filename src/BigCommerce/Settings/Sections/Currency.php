@@ -32,6 +32,7 @@ class Currency extends Settings_Section {
 	const DISPLAY_TAX_EXCLUSIVE = 'tax_exclusive';
 
 	const ENABLE_CURRENCY_SWITCHER = 'enable_currency_switcher';
+	const DISABLE_REALTIME_PRICING = 'disable_price_refresh';
 
 	/**
 	 * @return void
@@ -77,6 +78,22 @@ class Currency extends Settings_Section {
 				'label_for' => 'field-' . self::ENABLE_CURRENCY_SWITCHER,
 			]
 		);
+
+        register_setting(
+            Settings_Screen::NAME,
+            self::DISABLE_REALTIME_PRICING
+        );
+
+        add_settings_field(
+            self::DISABLE_REALTIME_PRICING,
+            esc_html( __( 'Disable Real-Time Pricing', 'bigcommerce' ) ),
+            [ $this, 'render_disable_price_refresh_field' ],
+            Settings_Screen::NAME,
+            self::NAME,
+            [
+                'label_for' => 'field-' . self::DISABLE_REALTIME_PRICING,
+            ]
+        );
 	}
 
 	public function render_section( $section ) {
@@ -110,5 +127,11 @@ class Currency extends Settings_Section {
 		$checkbox = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::ENABLE_CURRENCY_SWITCHER ), esc_attr( self::ENABLE_CURRENCY_SWITCHER ), checked( true, $value, false ) );
 		printf( '<p class="description">%s %s</p>', $checkbox, esc_html( __( 'If enabled, this adds a WordPress Widget to allow customers to switch the currency on the front-end.', 'bigcommerce' ) ) );
 	}
+
+    public function render_disable_price_refresh_field() {
+        $value    = (bool) get_option( self::DISABLE_REALTIME_PRICING, false );
+        $checkbox = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::DISABLE_REALTIME_PRICING ), esc_attr( self::DISABLE_REALTIME_PRICING ), checked( true, $value, false ) );
+        printf( '<p class="description">%s %s</p>', $checkbox, esc_html( __( 'If checked, cached prices will be used instead of refreshing from the BigCommerce API on page load and variation selections.', 'bigcommerce' ) ) );
+    }
 
 }
