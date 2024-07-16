@@ -1,5 +1,10 @@
 # Changelog
 
+## [5.0.7.7]
+
+### Added
+- Tweak - Added additional logging Product/Term Updates
+
 ## [5.0.7.6]
 
 ### Added

@@ -17,6 +17,8 @@ class Term_Updater extends Term_Saver {
 			] );
 
 			return 0;
+		} else{
+			do_action( 'bigcommerce/import/log', Error_Log::NOTICE, __( 'Category ' . $this->term_id . ' updated', 'bigcommerce' ),[] );
 		}
 
 		return $term[ 'term_id' ];
@@ -26,6 +28,7 @@ class Term_Updater extends Term_Saver {
 		update_term_meta( $this->term_id, 'bigcommerce_id', $this->get_term_bc_id( $bc_term ) );
 		update_term_meta( $this->term_id, 'sort_order', $bc_term[ 'sort_order' ] );
 		update_term_meta( $this->term_id, 'is_visible', ( int ) $bc_term[ 'is_visible' ] );
+		do_action( 'bigcommerce/import/log', Error_Log::NOTICE, __( 'Category ' . $this->term_id . ' Term Meta Updated', 'bigcommerce' ),[] );
 	}
 
 }
