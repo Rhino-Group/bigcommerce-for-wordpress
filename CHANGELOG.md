@@ -1,5 +1,8 @@
 # Changelog
 
+## [5.0.7.8]
+- Enhancement - Allow disabling of pricing nonce field via Customizer to prevent errors on sites using full-page caching.
+
 ## [5.0.7.7]
 
 ### Added

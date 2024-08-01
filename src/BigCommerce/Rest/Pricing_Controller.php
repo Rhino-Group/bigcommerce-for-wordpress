@@ -45,15 +45,14 @@ class Pricing_Controller extends Rest_Controller {
 	}
 
 	/**
-	 * Nonce should always be on non-headless setup or if it is enabled via Customizer
+	 * Nonce is enabled or disabled via Customizer
 	 *
 	 * @return bool
 	 */
 	public function is_nonce_enabled(): bool {
-		$is_headless = ( int ) get_option( Import::HEADLESS_FLAG, 0 ) === 1;
-		$is_nonce_on = get_option( Product_Single::ENABLE_PRICE_NONCE, 'yes' ) === 'yes';
 
-		return ! $is_headless || $is_nonce_on;
+        // 2024-08-01: Allow changing nonce setting regardless of import mode. Needed for full-page caching.
+		return get_option( Product_Single::ENABLE_PRICE_NONCE, 'yes' ) === 'yes';
 	}
 
 	public function register_routes() {

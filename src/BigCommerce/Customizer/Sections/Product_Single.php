@@ -214,9 +214,11 @@ class Product_Single {
 	 * @param \WP_Customize_Manager $wp_customize
 	 */
 	protected function pricing_nonce( \WP_Customize_Manager $wp_customize ): void {
-		if ( ( int ) get_option( Import::HEADLESS_FLAG, 0 ) !== 1 ) {
-			return;
-		}
+
+        // 2024-08-01: Allow changing nonce setting regardless of import mode. Needed for full-page caching.
+		//if ( ( int ) get_option( Import::HEADLESS_FLAG, 0 ) !== 1 ) {
+		//	return;
+		//}
 
 		$wp_customize->add_setting( new \WP_Customize_Setting( $wp_customize, self::ENABLE_PRICE_NONCE, [
 				'type'      => 'option',
@@ -226,12 +228,12 @@ class Product_Single {
 		$wp_customize->add_control( self::ENABLE_PRICE_NONCE, [
 			'section' => self::NAME,
 			'type'    => 'radio',
-			'label'   => __( 'Pricing nonce field(for advanced use only)', 'bigcommerce' ),
+			'label'   => __( 'Pricing nonce field', 'bigcommerce' ),
 			'choices' => [
 				'yes' => __( 'Enable pricing nonce', 'bigcommerce' ),
 				'no'  => __( 'Disable pricing nonce', 'bigcommerce' ),
 			],
-			'description' => __( 'Control pricing request option by adding or removing pricing nonce. The feature can be used on heavy cached environments to prevent issues with expired nonce when "Fast - Headless" import is on', 'bigcommerce' ),
+			'description' => __( 'Control whether pricing request sends nonce value. Disable when used with full-page caching.', 'bigcommerce' ),
 		] );
 	}
 }
