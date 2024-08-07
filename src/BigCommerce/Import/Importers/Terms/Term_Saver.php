@@ -6,6 +6,7 @@ namespace BigCommerce\Import\Importers\Terms;
 use BigCommerce\Import\Import_Strategy;
 use BigCommerce\Import\Image_Importer;
 use BigCommerce\Import\Processors\Category_Import;
+use BigCommerce\Logging\Error_Log;
 
 abstract class Term_Saver implements Import_Strategy {
 

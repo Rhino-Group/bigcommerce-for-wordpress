@@ -1,5 +1,16 @@
 # Changelog
 
+## [5.0.7.9]
+- Enhancement - Extension of 5.0.7.8: Disable nonce check in cart endpoints based on Customizer setting.
+
+## [5.0.7.8]
+- Enhancement - Allow disabling of pricing nonce field via Customizer to prevent errors on sites using full-page caching.
+
+## [5.0.7.7]
+
+### Added
+- Tweak - Added additional logging Product/Term Updates
+
 ## [5.0.7.6]
 
 ### Added

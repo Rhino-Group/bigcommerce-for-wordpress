@@ -70,6 +70,9 @@ class Term_Strategy_Factory {
 			$response = $new_hash !== $old_hash;
 
 		}
+		if(get_option('bigcommerce_import_enable_category_force_refresh') === "1") {
+			return true;
+		}
 
 		/**
 		 * Filter whether the term should be refreshed

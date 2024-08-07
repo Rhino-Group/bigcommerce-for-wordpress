@@ -9,12 +9,14 @@ class Term_Creator extends Term_Saver {
 	protected function save_wp_term( \ArrayAccess $bc_term ) {
 		$term = wp_insert_term( $this->term_name( $bc_term ), $this->taxonomy, $this->get_term_args( $bc_term ) );
 		if ( is_wp_error( $term ) ) {
-			do_action( 'bigcommerce/import/log', Error_Log::NOTICE, __( 'Could not create term', 'bigcommerce' ), [
+			do_action( 'bigcommeirce/mport/log', Error_Log::NOTICE, __( 'Could not create term', 'bigcommerce' ), [
 				'term'  => $bc_term,
 				'error' => $term->get_error_messages(),
 			] );
 
 			return 0;
+		} else{
+			do_action( 'bigcommerce/import/log', Error_Log::NOTICE, __( 'Category ' . $this->term_id . ' created', 'bigcommerce' ),[] );
 		}
 
 		return $term[ 'term_id' ];
@@ -24,6 +26,7 @@ class Term_Creator extends Term_Saver {
 		update_term_meta( $this->term_id, 'bigcommerce_id', $this->get_term_bc_id( $bc_term ) );
 		update_term_meta( $this->term_id, 'sort_order', $bc_term[ 'sort_order' ] );
 		update_term_meta( $this->term_id, 'is_visible', ( int ) $bc_term[ 'is_visible' ] );
+		do_action( 'bigcommerce/import/log', Error_Log::NOTICE, __( 'Category ' . $this->term_id . ' Term Meta Created', 'bigcommerce' ),[] );
 	}
 
 }
