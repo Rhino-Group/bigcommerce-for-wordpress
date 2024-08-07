@@ -228,12 +228,12 @@ class Product_Single {
 		$wp_customize->add_control( self::ENABLE_PRICE_NONCE, [
 			'section' => self::NAME,
 			'type'    => 'radio',
-			'label'   => __( 'Pricing nonce field', 'bigcommerce' ),
+			'label'   => __( 'API nonce field', 'bigcommerce' ),
 			'choices' => [
-				'yes' => __( 'Enable pricing nonce', 'bigcommerce' ),
-				'no'  => __( 'Disable pricing nonce', 'bigcommerce' ),
+				'yes' => __( 'Enable nonce', 'bigcommerce' ),
+				'no'  => __( 'Disable nonce', 'bigcommerce' ),
 			],
-			'description' => __( 'Control whether pricing request sends nonce value. Disable when used with full-page caching.', 'bigcommerce' ),
+			'description' => __( 'Control whether pricing and add-to-cart requests send nonce value. Disable when used with full-page caching.', 'bigcommerce' ),
 		] );
 	}
 }

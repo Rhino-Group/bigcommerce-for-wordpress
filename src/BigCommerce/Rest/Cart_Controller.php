@@ -11,6 +11,7 @@ use BigCommerce\Api\v3\Model\CartUpdateRequest;
 use BigCommerce\Cart\Cart;
 use BigCommerce\Cart\Cart_Mapper;
 use BigCommerce\Cart\Item_Counter;
+use BigCommerce\Customizer\Sections\Product_Single;
 use BigCommerce\Exceptions\Product_Not_Found_Exception;
 use BigCommerce\Post_Types\Product\Product;
 use BigCommerce\Settings\Sections\Cart as Cart_Settings;
@@ -43,11 +44,21 @@ class Cart_Controller extends Rest_Controller {
 	public function js_config( $config ) {
 		$config['cart']['api_url']         = $this->get_base_url();
 		$config['cart']['ajax_enabled']    = (bool) get_option( Cart_Settings::OPTION_AJAX_CART, true );
-		$config['cart']['ajax_cart_nonce'] = wp_create_nonce( 'wp_rest' );
+		$config['cart']['ajax_cart_nonce'] = $this->is_nonce_enabled() ? wp_create_nonce( 'wp_rest' ) : false;
 
 		return $config;
 	}
 
+    /**
+     * Nonce is enabled or disabled via Customizer
+     *
+     * @return bool
+     */
+    public function is_nonce_enabled(): bool {
+
+        // 2024-08-01: Allow changing nonce setting regardless of import mode. Needed for full-page caching.
+        return get_option( Product_Single::ENABLE_PRICE_NONCE, 'yes' ) === 'yes';
+    }
 
 	public function register_routes() {
 		register_rest_route( $this->namespace, '/' . $this->create_route_path(), [
@@ -166,6 +177,17 @@ class Cart_Controller extends Rest_Controller {
 			],
 			'schema' => [ $this, 'get_rendered_item_schema' ],
 		] );
+
+        /*
+         * 08-07-2024 - Extend the disabling of nonce values to the cookie check function.
+         * Prevent the cookie check only if nonce tokens are disabled in customizer and the
+         * request is for the cart endpoints.
+         */
+		if ( ! $this->is_nonce_enabled()
+            && stripos( $_SERVER['REQUEST_URI'], $this->namespace . '/' . $this->rest_base ) !== false ) {
+
+			remove_filter( 'rest_authentication_errors', 'rest_cookie_check_errors', 100 );
+		}
 	}
 
 	private function create_route_path() {
