@@ -1,4 +1,6 @@
 # Changelog
+## [5.0.7.10]
+- Fix - Fixed an issue where the Page creation process was running on every page of the admin, messing up the cart pages.
 
 ## [5.0.7.9]
 - Enhancement - Extension of 5.0.7.8: Disable nonce check in cart endpoints based on Customizer setting.

@@ -117,13 +117,6 @@ class Pages extends Provider {
 			return new Wishlist_Page();
 		};
 
-		add_action( 'admin_init', $this->create_callback( 'create_pages', function () use ( $container ) {
-			foreach ( $container[ self::REQUIRED_PAGES ] as $page ) {
-				/** @var Required_Page $page */
-				$page->ensure_page_exists();
-			}
-		} ), 10, 0 );
-
 		$clear_options = $this->create_callback( 'clear_options', function ( $post_id ) use ( $container ) {
 			foreach ( $container[ self::REQUIRED_PAGES ] as $page ) {
 				/** @var Required_Page $page */
