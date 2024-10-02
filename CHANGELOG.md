@@ -1,6 +1,8 @@
 # Changelog
+## [5.0.7.12]
+- Enhancement - Remove the ability to auto add products to channel due to flawed logic that cause products to get disabled inadvertently. 
 ## [5.0.7.11]
-- Enhancement - Added in more cron timeframes for running the product import process.
+- `Enhancement - Added in more cron timeframes for running the product import process.`
 ## [5.0.7.10]
 - Fix - Fixed an issue where the Page creation process was running on every page of the admin, messing up the cart pages.
 
