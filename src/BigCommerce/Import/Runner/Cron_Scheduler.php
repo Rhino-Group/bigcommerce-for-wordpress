@@ -37,6 +37,18 @@ class Cron_Scheduler {
 			case Import::FREQUENCY_HOURLY:
 				$offset = HOUR_IN_SECONDS;
 				break;
+			case Import::FREQUENCY_BIHOURLY:
+				$offset = HOUR_IN_SECONDS*2;
+				break;
+			case Import::FREQUENCY_FOURHOURS:
+				$offset = HOUR_IN_SECONDS*4;
+				break;
+			case Import::FREQUENCY_EIGHTHOURS:
+				$offset = HOUR_IN_SECONDS*8;
+				break;
+			case Import::FREQUENCY_TWELVEHOURS:
+				$offset = HOUR_IN_SECONDS*12;
+				break;
 			case Import::FREQUENCY_THIRTY:
 				$offset = 30 * MINUTE_IN_SECONDS;
 				break;

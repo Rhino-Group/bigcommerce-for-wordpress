@@ -1,4 +1,6 @@
 # Changelog
+## [5.0.7.11]
+- Enhancement - Added in more cron timeframes for running the product import process.
 ## [5.0.7.10]
 - Fix - Fixed an issue where the Page creation process was running on every page of the admin, messing up the cart pages.
 

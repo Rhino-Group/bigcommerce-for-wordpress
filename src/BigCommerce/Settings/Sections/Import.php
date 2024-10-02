@@ -30,6 +30,10 @@ class Import extends Settings_Section {
 	const FREQUENCY_FIVE    = 'five_minutes';
 	const FREQUENCY_THIRTY  = 'thirty_minutes';
 	const FREQUENCY_HOURLY  = 'hourly';
+	const FREQUENCY_BIHOURLY  = 'bihourly';
+	const FREQUENCY_FOURHOURS  = 'fourhours';
+	const FREQUENCY_EIGHTHOURS  = 'eighthours';
+	const FREQUENCY_TWELVEHOURS  = 'twelvehours';
 	const FREQUENCY_DAILY   = 'daily';
 	const FREQUENCY_WEEKLY  = 'weekly';
 	const FREQUENCY_MONTHLY = 'monthly';
@@ -316,6 +320,10 @@ class Import extends Settings_Section {
 			self::FREQUENCY_FIVE    => __( 'Five Minutes', 'bigcommerce' ),
 			self::FREQUENCY_THIRTY  => __( 'Thirty Minutes', 'bigcommerce' ),
 			self::FREQUENCY_HOURLY  => __( 'Hour', 'bigcommerce' ),
+			self::FREQUENCY_BIHOURLY  => __( '2 Hours', 'bigcommerce' ),
+			self::FREQUENCY_FOURHOURS  => __( '4 Hours', 'bigcommerce' ),
+			self::FREQUENCY_EIGHTHOURS  => __( '8 Hours', 'bigcommerce' ),
+			self::FREQUENCY_TWELVEHOURS  => __( '12 Hours', 'bigcommerce' ),
 			self::FREQUENCY_DAILY   => __( 'Day', 'bigcommerce' ),
 			self::FREQUENCY_WEEKLY  => __( 'Week', 'bigcommerce' ),
 			self::FREQUENCY_MONTHLY => __( 'Month', 'bigcommerce' ),
