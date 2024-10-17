@@ -1,4 +1,6 @@
 # Changelog
+## [5.0.7.13]
+- Fix - Webhooks subscribing to the wrong channel events.
 ## [5.0.7.12]
 - Enhancement - Remove the ability to auto add products to channel due to flawed logic that cause products to get disabled inadvertently. 
 ## [5.0.7.11]

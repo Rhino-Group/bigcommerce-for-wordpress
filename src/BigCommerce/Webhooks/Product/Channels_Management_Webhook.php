@@ -17,7 +17,7 @@ use BigCommerce\Webhooks\Webhook;
  */
 class Channels_Management_Webhook extends Webhook {
 
-	const SCOPE                 = 'store/channel/*';
+	const SCOPE                 = 'store/channel/updated';
 	const CHANNEL_UPDATED_SCOPE = 'store/channel/updated';
 	const CHANNEL_UPDATED_HOOK  = 'bigcommerce/webhooks/channel_updated';
 	const NAME                  = 'bigcommerce_channels';
