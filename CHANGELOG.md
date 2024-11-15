@@ -1,4 +1,6 @@
 # Changelog
+## [5.0.7.14]
+- Enhancement - Disable Flushing of the user groups cache since none of our sites use it and it locks up the cron.
 ## [5.0.7.13]
 - Fix - Webhooks subscribing to the wrong channel events.
 ## [5.0.7.12]
