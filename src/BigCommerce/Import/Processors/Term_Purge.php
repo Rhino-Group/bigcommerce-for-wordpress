@@ -72,6 +72,7 @@ abstract class Term_Purge implements Import_Processor {
 		try {
 			$local_terms  = $this->get_local_term_ids( $page );
 			$remote_terms = $this->get_remote_term_ids( $local_terms );
+
 		} catch ( ApiException $e ) {
 			do_action( 'bigcommerce/import/error', $e->getMessage(), [
 				'response' => $e->getResponseBody(),
@@ -81,7 +82,11 @@ abstract class Term_Purge implements Import_Processor {
 
 			return;
 		}
-
+		if(empty($remote_terms) ){
+			$status->set_status( $this->completed_state() );
+			$this->clear_state();
+			return;
+		}
 		$deleted_terms = array_diff( $local_terms, $remote_terms );
 
 		// Create/update each term
