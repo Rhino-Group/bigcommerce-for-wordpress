@@ -1,4 +1,6 @@
 # Changelog
+## [5.0.7.15]
+- Fix - Stores incorrectly marked as MSF because of a bug in BC, clearing out categories.
 ## [5.0.7.14]
 - Enhancement - Disable Flushing of the user groups cache since none of our sites use it and it locks up the cron.
 ## [5.0.7.13]
