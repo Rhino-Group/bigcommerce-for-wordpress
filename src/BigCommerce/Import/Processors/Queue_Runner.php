@@ -136,7 +136,10 @@ class Queue_Runner implements Import_Processor {
 			$bigcommerce_id = get_post_meta( $record->ID, \BigCommerce\Post_Types\Product\Product::BIGCOMMERCE_ID, true );
 			$this->handle_update( $bigcommerce_id, $data, $channels );
 		} elseif ( $record->post_status === 'delete' ) {
-			$this->handle_delete( $data, $channels );
+			$disable_product_deletion = get_option('bigcommerce_import_disable_product_deletion','0');
+			if($disable_product_deletion !== "1") {
+				$this->handle_delete( $data, $channels );
+			}
 		}
 
 	}
@@ -167,13 +170,16 @@ class Queue_Runner implements Import_Processor {
 	 * @return void
 	 */
 	private function handle_update_for_channel( $product, $listings, $channel_term ) {
+		$disable_product_deletion = get_option('bigcommerce_import_disable_product_deletion','0');
 		if ( empty( $listings->{$channel_term->term_id} ) ) {
 			do_action( 'bigcommerce/log', Error_Log::DEBUG, __( 'No listing found for product, removing', 'bigcommerce' ), [
 				'product_id' => $product->getId(),
 				'channel'    => $channel_term->term_id,
 			] );
-			$remover = new Product_Remover();
-			$remover->remove_by_product_id( $product->getId(), $channel_term );
+			if($disable_product_deletion !== "1") {
+				$remover = new Product_Remover();
+				$remover->remove_by_product_id( $product->getId(), $channel_term );
+			}
 
 			return;
 		}
@@ -197,8 +203,10 @@ class Queue_Runner implements Import_Processor {
 				'channel'    => $channel_term->term_id,
 				'state'      => $listing_state,
 			] );
-			$remover = new Product_Remover();
-			$remover->remove_by_product_id( $product->getId(), $channel_term );
+			if($disable_product_deletion !== "1") {
+				$remover = new Product_Remover();
+				$remover->remove_by_product_id( $product->getId(), $channel_term );
+			}
 
 			return;
 		}
@@ -221,6 +229,7 @@ class Queue_Runner implements Import_Processor {
 	 * @return void
 	 */
 	private function handle_delete( $data, $channels = [] ) {
+
 		do_action( 'bigcommerce/log', Error_Log::DEBUG, __( 'Removing product', 'bigcommerce' ), [
 			'data' => $data,
 		] );

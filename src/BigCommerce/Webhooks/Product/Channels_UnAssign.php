@@ -21,8 +21,39 @@ class Channels_UnAssign extends Channels_Manager {
 			return;
 		}
 
-		$remover = new Product_Remover();
-		$remover->remove_by_product_id( $product_id, $channel );
+		$post_id = $this->match_post_id( $product_id, $channel );
+		$post = array( 'ID' => $post_id, 'post_status' => 'draft' );
+		wp_update_post($post);
+	}
+
+	private function match_post_id( $product_id, \WP_Term $channel ) {
+		$args = [
+			'meta_query'     => [
+				[
+					'key'   => 'bigcommerce_id',
+					'value' => absint( $product_id ),
+				],
+			],
+			'tax_query'      => [
+				[
+					'taxonomy' => $channel->taxonomy,
+					'field'    => 'term_id',
+					'terms'    => [ (int) $channel->term_id ],
+					'operator' => 'IN',
+				],
+			],
+			'post_type'      => \BigCommerce\Post_Types\Product\Product::NAME,
+			'post_status'    => 'any',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+		];
+
+		$posts = get_posts( $args );
+		if ( empty( $posts ) ) {
+			return 0;
+		}
+
+		return absint( reset( $posts ) );
 	}
 
 }

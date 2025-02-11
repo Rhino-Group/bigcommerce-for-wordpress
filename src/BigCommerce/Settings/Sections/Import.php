@@ -21,6 +21,7 @@ class Import extends Settings_Section {
 	const ENABLE_CUSTOMER_WEBHOOKS = 'bigcommerce_import_enable_customer_webhooks';
 	const ENABLE_IMAGE_IMPORT      = 'bigcommerce_import_enable_image_import';
 	const ENABLE_IMAGE_OVERWRITE_IMPORT      = 'bigcommerce_import_enable_image_overwrite_import';
+	const DISABLE_PRODUCT_DELETION      = 'bigcommerce_import_disable_product_deletion';
 	const ENABLE_PRODUCT_FORCE_REFRESH      = 'bigcommerce_import_enable_product_force_refresh';
 	const ENABLE_CATEGORY_FORCE_REFRESH      = 'bigcommerce_import_enable_category_force_refresh';
 	const MAX_CONCURRENT           = 'bigcommerce_import_max_concurrent';
@@ -174,6 +175,21 @@ class Import extends Settings_Section {
 				'type'   => 'radio',
 				'option' => self::ENABLE_IMAGE_IMPORT,
 				'label'  => __( 'Allow product images import', 'bigcommerce' ),
+			]
+		);
+		register_setting(
+			Settings_Screen::NAME,
+			self::DISABLE_PRODUCT_DELETION
+		);
+
+		add_settings_field(
+			self::DISABLE_PRODUCT_DELETION,
+			esc_html( __( 'Disable Product Deletion', 'bigcommerce' ) ),
+			[ $this, 'render_product_deletion_checkbox', ],
+			Settings_Screen::NAME,
+			self::NAME,
+			[
+				'label_for' => 'field-' . self::DISABLE_PRODUCT_DELETION,
 			]
 		);
 		register_setting(
@@ -406,6 +422,17 @@ class Import extends Settings_Section {
 			esc_html( __( "Import processing in parallel for fetching listings, products, channel initialization", 'bigcommerce' ) )
 		);
 		echo '</fieldset>';
+	}
+
+	public function render_product_deletion_checkbox() {
+		$value     = (bool) get_option( self::DISABLE_PRODUCT_DELETION, false );
+		$checkbox  = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::DISABLE_PRODUCT_DELETION ), esc_attr( self::DISABLE_PRODUCT_DELETION ), checked( true, $value, false ));
+		$description = __( 'Disable the ability for products to be deleted during the import process. This will prevent failed API calls from completely removing all information about a product and postmeta.', 'bigcommerce' );
+		printf( '<p class="description">%s %s</p>', $checkbox, sprintf(
+			$description,
+			sprintf( '<a target="__blank" href="%s">', esc_url( 'https://login.bigcommerce.com/deep-links/manage/settings/store' ) ),
+			'</a>'
+		) );
 	}
 
 	public function render_image_import_overwrite_checkbox() {
