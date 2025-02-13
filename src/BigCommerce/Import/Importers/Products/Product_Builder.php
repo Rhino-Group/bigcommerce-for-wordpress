@@ -265,6 +265,10 @@ class Product_Builder {
 
 			return ( $a[ 'sort_order' ] < $b[ 'sort_order' ] ) ? - 1 : 1;
 		} );
+
+        // Rhino: 02-13-2025 - Remove attachments that don't exist in BC
+        $this->deleteRemovedImages( $parent_id, $images );
+
 		foreach ( $images as $image ) {
 			/** @var ProductImage $image */
 
@@ -567,4 +571,37 @@ class Product_Builder {
 		$listing_string = wp_json_encode( ObjectSerializer::sanitizeForSerialization( $listing ) );
 		return md5( $product_string . $listing_string );
 	}
+
+    /**
+     * Compares BigCommerce image list to attachments found in WordPress.
+     * Any attachments without a match in BigCommerce are removed from WordPress.
+     *
+     * @since 5.0.7.16
+     * @param int $parent_id
+     * @param array $images
+     * @return void
+     */
+    public function deleteRemovedImages(int $parent_id, array $images): void
+    {
+        $existing_attachments = get_posts([
+            'post_type' => 'attachment',
+            'post_parent' => $parent_id,
+            'posts_per_page' => 999,
+        ]);
+
+        foreach ( $existing_attachments as $attachment ) {
+
+            $bc_image_id = get_post_meta( $attachment->ID, 'bigcommerce_id', true );
+
+            // Is this attachment still on BC?
+            $match = array_filter( $images, function ($image) use ($bc_image_id) {
+                return $image['id'] == $bc_image_id;
+            });
+
+            // If it DOES NOT exist in BigCommerce, then remove it from WordPress
+            if ( empty( $match ) ) {
+                wp_delete_attachment( $attachment->ID, true );
+            }
+        }
+    }
 }

@@ -1,4 +1,6 @@
 # Changelog
+## [5.0.7.16]
+- Fix - During Product Sync, remove WordPress attachments that no longer exist in BigCommerce.
 ## [5.0.7.15]
 - Fix - Stores incorrectly marked as MSF because of a bug in BC, clearing out categories.
 ## [5.0.7.14]

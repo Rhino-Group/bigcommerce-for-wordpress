@@ -401,9 +401,12 @@ class Webhooks extends Provider {
 			return new Product_Updater( $container[ Api::FACTORY ]->catalog(), $container[ Api::FACTORY ]->channels() );
 		};
 
-		if ( ! $this->product_webhooks_enabled() ) {
-			return;
-		}
+        /**
+         This conditional prevents manual resyncing of products, so it's being suppressed
+        if ( ! $this->product_webhooks_enabled() ) {
+        return;
+        }
+        */
 
 		add_action( Webhook_Cron_Tasks::UPDATE_PRODUCT, $this->create_callback( 'update_product_cron_handler', function ( $product_id ) use ( $container ) {
             $container[ self::PRODUCT_UPDATER ]->update( $product_id );
