@@ -19,6 +19,7 @@ pimple.json
 .scssc
 /node_modules/
 phpdoc.json
+*.exe
 
 # Packages #
 ############
