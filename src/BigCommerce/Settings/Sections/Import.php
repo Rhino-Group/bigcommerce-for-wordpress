@@ -21,6 +21,7 @@ class Import extends Settings_Section {
 	const ENABLE_CUSTOMER_WEBHOOKS = 'bigcommerce_import_enable_customer_webhooks';
 	const ENABLE_IMAGE_IMPORT      = 'bigcommerce_import_enable_image_import';
 	const ENABLE_IMAGE_OVERWRITE_IMPORT      = 'bigcommerce_import_enable_image_overwrite_import';
+    const ENABLE_PRODUCT_BIDIR_SYNC     = 'bigcommerce_enable_product_bi-dir_sync';
 	const PRODUCT_DELETION_BEHAVIOR      = 'bigcommerce_import_product_deletion_behavior';
 	const ENABLE_PRODUCT_FORCE_REFRESH      = 'bigcommerce_import_enable_product_force_refresh';
 	const ENABLE_CATEGORY_FORCE_REFRESH      = 'bigcommerce_import_enable_category_force_refresh';
@@ -192,6 +193,23 @@ class Import extends Settings_Section {
 				'label_for' => 'field-' . self::PRODUCT_DELETION_BEHAVIOR,
 			]
 		);
+
+        register_setting(
+            Settings_Screen::NAME,
+            self::ENABLE_PRODUCT_BIDIR_SYNC
+        );
+
+        add_settings_field(
+            self::ENABLE_PRODUCT_BIDIR_SYNC,
+            esc_html( __( 'Allow Bi-Directional Product Sync', 'bigcommerce' ) ),
+            [ $this, 'render_product_bidir_sync_checkbox', ],
+            Settings_Screen::NAME,
+            self::NAME,
+            [
+                'label_for' => 'field-' . self::ENABLE_PRODUCT_BIDIR_SYNC,
+            ]
+        );
+
 		register_setting(
 			Settings_Screen::NAME,
 			self::ENABLE_IMAGE_OVERWRITE_IMPORT
@@ -442,6 +460,17 @@ class Import extends Settings_Section {
 
         printf( '<p class="description">%s</p>', esc_html( __( 'Change the behavior of product removal during the import process. Choosing disabled or draft will prevent failed API calls from completely removing all information about a product and postmeta.', 'bigcommerce' ) ) );
 	}
+
+    public function render_product_bidir_sync_checkbox() {
+        $value     = (bool) get_option( self::ENABLE_PRODUCT_BIDIR_SYNC, false );
+        $checkbox  = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::ENABLE_PRODUCT_BIDIR_SYNC ), esc_attr( self::ENABLE_PRODUCT_BIDIR_SYNC ), checked( true, $value, false ));
+        $description = __( 'Allow plugin to push product changes made in WordPress back into BigCommerce.', 'bigcommerce' );
+        printf( '<p class="description">%s %s</p>', $checkbox, sprintf(
+            $description,
+            sprintf( '<a target="__blank" href="%s">', esc_url( 'https://login.bigcommerce.com/deep-links/manage/settings/store' ) ),
+            '</a>'
+        ) );
+    }
 
 	public function render_image_import_overwrite_checkbox() {
 		$value     = (bool) get_option( self::ENABLE_IMAGE_OVERWRITE_IMPORT, false );
