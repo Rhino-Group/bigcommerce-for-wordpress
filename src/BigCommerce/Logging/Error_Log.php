@@ -228,7 +228,7 @@ HTACCESS;
 			return;
 		}
 
-		$this->truncate_log_2();
+		$this->truncate_dated_logs();
 
 		$max_allowed_size = (int) get_option( Troubleshooting_Diagnostics::LOG_FILE_SIZE, self::MAX_SIZE );
 
@@ -268,7 +268,7 @@ HTACCESS;
 		}
 	}
 
-	public function truncate_log_2(){
+	public function truncate_dated_logs(){
 		$days = 10;
 		if ( file_exists( $this->log_folder_path ) ) {
 			$fileSystemIterator = new \FilesystemIterator( $this->log_folder_path );

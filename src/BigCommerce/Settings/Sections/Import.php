@@ -21,7 +21,7 @@ class Import extends Settings_Section {
 	const ENABLE_CUSTOMER_WEBHOOKS = 'bigcommerce_import_enable_customer_webhooks';
 	const ENABLE_IMAGE_IMPORT      = 'bigcommerce_import_enable_image_import';
 	const ENABLE_IMAGE_OVERWRITE_IMPORT      = 'bigcommerce_import_enable_image_overwrite_import';
-	const DISABLE_PRODUCT_DELETION      = 'bigcommerce_import_disable_product_deletion';
+	const PRODUCT_DELETION_BEHAVIOR      = 'bigcommerce_import_product_deletion_behavior';
 	const ENABLE_PRODUCT_FORCE_REFRESH      = 'bigcommerce_import_enable_product_force_refresh';
 	const ENABLE_CATEGORY_FORCE_REFRESH      = 'bigcommerce_import_enable_category_force_refresh';
 	const MAX_CONCURRENT           = 'bigcommerce_import_max_concurrent';
@@ -179,17 +179,17 @@ class Import extends Settings_Section {
 		);
 		register_setting(
 			Settings_Screen::NAME,
-			self::DISABLE_PRODUCT_DELETION
+			self::PRODUCT_DELETION_BEHAVIOR
 		);
 
 		add_settings_field(
-			self::DISABLE_PRODUCT_DELETION,
-			esc_html( __( 'Disable Product Deletion', 'bigcommerce' ) ),
-			[ $this, 'render_product_deletion_checkbox', ],
+			self::PRODUCT_DELETION_BEHAVIOR,
+			esc_html( __( 'Product Deletion Behavior', 'bigcommerce' ) ),
+			[ $this, 'render_product_deletion_select', ],
 			Settings_Screen::NAME,
 			self::NAME,
 			[
-				'label_for' => 'field-' . self::DISABLE_PRODUCT_DELETION,
+				'label_for' => 'field-' . self::PRODUCT_DELETION_BEHAVIOR,
 			]
 		);
 		register_setting(
@@ -424,15 +424,23 @@ class Import extends Settings_Section {
 		echo '</fieldset>';
 	}
 
-	public function render_product_deletion_checkbox() {
-		$value     = (bool) get_option( self::DISABLE_PRODUCT_DELETION, false );
-		$checkbox  = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::DISABLE_PRODUCT_DELETION ), esc_attr( self::DISABLE_PRODUCT_DELETION ), checked( true, $value, false ));
-		$description = __( 'Disable the ability for products to be deleted during the import process. This will prevent failed API calls from completely removing all information about a product and postmeta.', 'bigcommerce' );
-		printf( '<p class="description">%s %s</p>', $checkbox, sprintf(
-			$description,
-			sprintf( '<a target="__blank" href="%s">', esc_url( 'https://login.bigcommerce.com/deep-links/manage/settings/store' ) ),
-			'</a>'
-		) );
+	public function render_product_deletion_select() {
+
+        $value   = get_option( self::PRODUCT_DELETION_BEHAVIOR, '' );
+        $choices = [
+            '' => 'Disabled',
+            'draft' => 'Draft',
+            'delete' => 'Delete',
+            'trash' => 'Trash'
+        ];
+
+        $options = [];
+        foreach ( $choices as $key => $label ) {
+            $options[] = sprintf( '<option value="%s" %s>%s</option>', esc_attr( $key ), selected( $key, $value, false ), esc_html( $label ) );
+        }
+        printf( '<select id="field-%s" name="%s" class="regular-text bc-field-choices">%s</select>', esc_attr( self::PRODUCT_DELETION_BEHAVIOR ), esc_attr( self::PRODUCT_DELETION_BEHAVIOR ), implode( "\n", $options ) );
+
+        printf( '<p class="description">%s</p>', esc_html( __( 'Change the behavior of product removal during the import process. Choosing disabled or draft will prevent failed API calls from completely removing all information about a product and postmeta.', 'bigcommerce' ) ) );
 	}
 
 	public function render_image_import_overwrite_checkbox() {

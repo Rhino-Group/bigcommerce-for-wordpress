@@ -157,7 +157,6 @@ class Import extends Provider {
 	}
 
 	private function process( Container $container ) {
-		$disable_product_deletion = get_option('bigcommerce_import_disable_product_deletion','0');
 
 		$container[ self::BATCH_SIZE ] = function ( Container $container ) {
 			$batch = absint( get_option( Import_Settings::BATCH_SIZE, 5 ) );
@@ -226,11 +225,9 @@ class Import extends Provider {
 			return new Processors\Product_Data_Fetcher( $container[ Api::FACTORY ]->catalog(), $container[ self::LARGE_BATCH_SIZE ] );
 		};
 
-		if($disable_product_deletion !== "1"){
-			$container[ self::MARK ] = function ( Container $container ) {
-				return new Processors\Deleted_Product_Marker();
-			};
-		}
+        $container[ self::MARK ] = function ( Container $container ) {
+            return new Processors\Deleted_Product_Marker();
+        };
 
 		$container[ self::QUEUE ] = function ( Container $container ) {
 			return new Processors\Queue_Runner( $container[ Api::FACTORY ]->catalog(), $container[ self::BATCH_SIZE ], 5 );
@@ -244,11 +241,9 @@ class Import extends Provider {
 			return new Processors\Currencies( $container[ Api::FACTORY ]->currencies(), $container[ Api::FACTORY ]->currenciesV3(), new Connections() );
 		};
 
-		if($disable_product_deletion !== "1"){
-			$container[ self::PRODUCT_CLEANUP ] = function ( Container $container ) {
-				return new Processors\ProductCleanup( $container[ self::LARGE_BATCH_SIZE ] );
-			};
-		}
+        $container[ self::PRODUCT_CLEANUP ] = function ( Container $container ) {
+            return new Processors\ProductCleanup( $container[ self::LARGE_BATCH_SIZE ] );
+        };
 
 		$container[ self::CLEANUP ] = function ( Container $container ) {
 			return new Processors\Cleanup( $container[ Api::CACHE_HANDLER ], $container[ self::LARGE_BATCH_SIZE ] );
