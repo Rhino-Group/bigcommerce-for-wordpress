@@ -136,7 +136,7 @@ class Queue_Runner implements Import_Processor {
 			$bigcommerce_id = get_post_meta( $record->ID, \BigCommerce\Post_Types\Product\Product::BIGCOMMERCE_ID, true );
 			$this->handle_update( $bigcommerce_id, $data, $channels );
 		} elseif ( $record->post_status === 'delete' ) {
-			$this->handle_delete( $data, $channels );
+            $this->handle_delete( $data, $channels );
 		}
 
 	}
@@ -172,8 +172,8 @@ class Queue_Runner implements Import_Processor {
 				'product_id' => $product->getId(),
 				'channel'    => $channel_term->term_id,
 			] );
-			$remover = new Product_Remover();
-			$remover->remove_by_product_id( $product->getId(), $channel_term );
+            $remover = new Product_Remover();
+            $remover->remove_by_product_id( $product->getId(), $channel_term );
 
 			return;
 		}
@@ -197,8 +197,8 @@ class Queue_Runner implements Import_Processor {
 				'channel'    => $channel_term->term_id,
 				'state'      => $listing_state,
 			] );
-			$remover = new Product_Remover();
-			$remover->remove_by_product_id( $product->getId(), $channel_term );
+            $remover = new Product_Remover();
+            $remover->remove_by_product_id( $product->getId(), $channel_term );
 
 			return;
 		}

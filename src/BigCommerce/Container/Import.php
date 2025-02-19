@@ -225,9 +225,9 @@ class Import extends Provider {
 			return new Processors\Product_Data_Fetcher( $container[ Api::FACTORY ]->catalog(), $container[ self::LARGE_BATCH_SIZE ] );
 		};
 
-		$container[ self::MARK ] = function ( Container $container ) {
-			return new Processors\Deleted_Product_Marker();
-		};
+        $container[ self::MARK ] = function ( Container $container ) {
+            return new Processors\Deleted_Product_Marker();
+        };
 
 		$container[ self::QUEUE ] = function ( Container $container ) {
 			return new Processors\Queue_Runner( $container[ Api::FACTORY ]->catalog(), $container[ self::BATCH_SIZE ], 5 );
@@ -241,9 +241,9 @@ class Import extends Provider {
 			return new Processors\Currencies( $container[ Api::FACTORY ]->currencies(), $container[ Api::FACTORY ]->currenciesV3(), new Connections() );
 		};
 
-		$container[ self::PRODUCT_CLEANUP ] = function ( Container $container ) {
-			return new Processors\ProductCleanup( $container[ self::LARGE_BATCH_SIZE ] );
-		};
+        $container[ self::PRODUCT_CLEANUP ] = function ( Container $container ) {
+            return new Processors\ProductCleanup( $container[ self::LARGE_BATCH_SIZE ] );
+        };
 
 		$container[ self::CLEANUP ] = function ( Container $container ) {
 			return new Processors\Cleanup( $container[ Api::CACHE_HANDLER ], $container[ self::LARGE_BATCH_SIZE ] );

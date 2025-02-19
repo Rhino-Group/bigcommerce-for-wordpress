@@ -21,8 +21,8 @@ class Channels_UnAssign extends Channels_Manager {
 			return;
 		}
 
-		$remover = new Product_Remover();
-		$remover->remove_by_product_id( $product_id, $channel );
+        $remover = new Product_Remover();
+        $remover->remove_by_product_id( $product_id, $channel );
 	}
 
 }

@@ -228,6 +228,8 @@ HTACCESS;
 			return;
 		}
 
+		$this->truncate_dated_logs();
+
 		$max_allowed_size = (int) get_option( Troubleshooting_Diagnostics::LOG_FILE_SIZE, self::MAX_SIZE );
 
 		$files = scandir( $this->log_folder_path );
@@ -238,6 +240,9 @@ HTACCESS;
 
 		// Truncate logs files by path
 		foreach ( $files as $file ) {
+			if(strpos($file, 'debug') !== false){
+				continue;
+			}
 			$file_path = $this->log_folder_path . $file;
 			if ( ! is_file( $file_path ) ) {
 				continue;
@@ -260,6 +265,20 @@ HTACCESS;
 			$file = fopen( $file_path, "w" );
 
 			fclose( $file );
+		}
+	}
+
+	public function truncate_dated_logs(){
+		$days = 10;
+		if ( file_exists( $this->log_folder_path ) ) {
+			$fileSystemIterator = new \FilesystemIterator( $this->log_folder_path );
+			$now                = time();
+			foreach ( $fileSystemIterator as $file ) {
+				if ( $now - $file->getCTime() >= 60 * 60 * 24 * $days ) // 10 days
+				{
+					unlink( $this->log_folder_path . '/' . $file->getFilename() );
+				}
+			}
 		}
 	}
 

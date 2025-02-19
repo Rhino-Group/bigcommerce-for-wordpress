@@ -5,12 +5,27 @@ namespace BigCommerce\Import\Importers\Products;
 
 
 use BigCommerce\Post_Types\Product\Product;
+use BigCommerce\Settings\Sections\Import;
 
 class Product_Remover {
 
 	public function remove_by_post_id( $post_id ) {
 		if ( ! empty( $post_id ) ) {
-			$this->remove_post( $post_id );
+
+            $product_deletion_behavior = get_option( Import::PRODUCT_DELETION_BEHAVIOR, '' );
+
+            if ( 'draft' == $product_deletion_behavior ) {
+                wp_update_post([
+                    'ID' => $post_id,
+                    'post_status' => 'draft'
+                ]);
+            } else if ( 'trash' == $product_deletion_behavior ) {
+                wp_trash_post( $post_id );
+            } else if ( 'delete' == $product_deletion_behavior ) {
+                $this->remove_post( $post_id );
+            }
+
+            // The default behavior now is to do nothing on Product removal
 		}
 	}
 
