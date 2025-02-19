@@ -1,4 +1,8 @@
 # Changelog
+## [5.0.7.17]
+- Dev - Revise to use a product delete behavior selection instead of a boolean. Consolidated removal logic.
+- Dev - Add setting for disabling bi-directional sync of product data, primarily post_status changes. 
+- Fix - Correct issue where existing post check cannot find matching products.
 ## [5.0.7.16]
 - Fix - During Product Sync, remove WordPress attachments that no longer exist in BigCommerce.
 ## [5.0.7.15]
