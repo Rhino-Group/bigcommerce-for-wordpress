@@ -267,7 +267,7 @@ class Product_Builder {
 		} );
 
         // Rhino: 02-13-2025 - Remove attachments that don't exist in BC
-        $this->deleteRemovedImages( $parent_id, $images );
+        $this->delete_removed_images( $parent_id, $images );
 
 		foreach ( $images as $image ) {
 			/** @var ProductImage $image */
@@ -581,7 +581,7 @@ class Product_Builder {
      * @param array $images
      * @return void
      */
-    public function deleteRemovedImages(int $parent_id, array $images): void
+    public function delete_removed_images(int $parent_id, array $images): void
     {
         $existing_attachments = get_posts([
             'post_type' => 'attachment',
@@ -592,6 +592,9 @@ class Product_Builder {
         foreach ( $existing_attachments as $attachment ) {
 
             $bc_image_id = get_post_meta( $attachment->ID, 'bigcommerce_id', true );
+
+            if ( false == $bc_image_id || empty( $bc_image_id ) )
+                return;
 
             // Is this attachment still on BC?
             $match = array_filter( $images, function ($image) use ($bc_image_id) {
