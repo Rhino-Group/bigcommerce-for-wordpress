@@ -18,6 +18,7 @@ class Cart extends Settings_Section {
 	const OPTION_AJAX_CART         = 'bigcommerce_ajax_cart';
 	const OPTION_CART_PAGE_ID      = Cart_Page::NAME;
 	const OPTION_EMBEDDED_CHECKOUT = 'bigcommerce_enable_embedded_checkout';
+    const OPTION_ENABLE_CONTENT_INJECTION_CART = 'bigcommerce_enable_content_injection';
 
 	private $cart_page;
 	private $checkout_page;
@@ -137,6 +138,22 @@ class Cart extends Settings_Section {
 				'description' => esc_html( __( 'This page will only be displayed to customers if you are using an embedded checkout with a redirected payment processor.', 'bigcommerce' ) ),
 			]
 		);
+
+        register_setting(
+            Settings_Screen::NAME,
+            self::OPTION_ENABLE_CONTENT_INJECTION_CART
+        );
+
+        add_settings_field(
+            self::OPTION_ENABLE_CONTENT_INJECTION_CART,
+            esc_html( __( 'Enable Page Shortcode Injection', 'bigcommerce' ) ),
+            [ $this, 'render_enable_page_content_injection_field', ],
+            Settings_Screen::NAME,
+            self::NAME,
+            [
+                'label_for' => 'field-' . self::OPTION_ENABLE_CONTENT_INJECTION_CART,
+            ]
+        );
 	}
 
 	public function render_section( $section ) {
@@ -211,5 +228,11 @@ class Cart extends Settings_Section {
 		}
 
 	}
+
+    public function render_enable_page_content_injection_field() {
+        $value    = (bool) get_option( self::OPTION_ENABLE_CONTENT_INJECTION_CART, true );
+        $checkbox = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::OPTION_ENABLE_CONTENT_INJECTION_CART ), esc_attr( self::OPTION_ENABLE_CONTENT_INJECTION_CART ), checked( true, $value, false ) );
+        printf( '<p class="description">%s %s</p>', $checkbox, esc_html( __( 'If enabled, Bigcommerce required pages will have shortcodes injected on-the-fly when needed. Disable when using a Page Builder for the cart/checkout pages.', 'bigcommerce' ) ) );
+    }
 
 }

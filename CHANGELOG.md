@@ -1,4 +1,6 @@
 # Changelog
+## [5.0.7.18]
+- Dev - Add setting to control on-the-fly injection of BigCommerce shortcodes into required Cart and Checkout pages.
 ## [5.0.7.17]
 - Dev - Revise to use a product delete behavior selection instead of a boolean. Consolidated removal logic.
 - Dev - Add setting for disabling bi-directional sync of product data, primarily post_status changes. 
