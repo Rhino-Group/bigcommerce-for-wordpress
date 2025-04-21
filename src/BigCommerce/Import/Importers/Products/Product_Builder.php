@@ -16,6 +16,7 @@ use BigCommerce\Import\Import_Strategy;
 use BigCommerce\Import\Mappers\Brand_Mapper;
 use BigCommerce\Import\Mappers\Product_Category_Mapper;
 use BigCommerce\Post_Types\Product\Product;
+use BigCommerce\Settings\Sections\Import;
 use BigCommerce\Taxonomies\Availability\Availability;
 use BigCommerce\Taxonomies\Brand\Brand;
 use BigCommerce\Taxonomies\Channel\Channel;
@@ -77,7 +78,12 @@ class Product_Builder {
 	}
 
 	private function get_post_title() {
-		$title =  $this->listing->getName() ?: $this->product->getName();
+		$allow_update = get_option( Import::ENABLE_PRODUCT_BIDIR_SYNC, false );
+		if($allow_update === '1'){
+			$title =  $this->listing->getName() ?: $this->product->getName();
+		} else{
+			$title = $this->product->getName();
+		}
 
 		return $this->sanitize_title( $title );
 	}
@@ -87,7 +93,12 @@ class Product_Builder {
 	}
 
 	private function get_post_content() {
-		$content = $this->listing->getDescription() ?: $this->product->getDescription();
+		$allow_update = get_option( Import::ENABLE_PRODUCT_BIDIR_SYNC, false );
+		if($allow_update === '1'){
+			$content = $this->listing->getDescription() ?: $this->product->getDescription();
+		} else{
+			$content = $this->product->getDescription();
+		}
 
 		return $this->sanitize_content( $content );
 	}

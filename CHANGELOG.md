@@ -1,4 +1,6 @@
 # Changelog
+## [5.0.7.20]
+- Fix - Make bi-directional setting never grab from listing data.
 ## [5.0.7.19]
 - Fix - Correct issue with the name of a webhook and a php error when running it.
 ## [5.0.7.18]
