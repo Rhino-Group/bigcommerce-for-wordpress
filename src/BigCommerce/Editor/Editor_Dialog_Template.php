@@ -105,7 +105,7 @@ class Editor_Dialog_Template {
 
 		return $this->render_template( 'query-builder.php', [
 			'featured'   => $featured,
-			'sale'       => Import_Type::is_traditional_import() && $sale,
+			'sale'       => Import_Type::is_traditional_import() ? $sale : false,
 			'brands'     => $brand_choices,
 			'categories' => $category_choices,
 			'channels'   => $channels,
