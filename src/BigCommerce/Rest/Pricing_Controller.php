@@ -199,7 +199,7 @@ class Pricing_Controller extends Rest_Controller {
 				'formatted' => $this->format_currency( $original_value ),
 			];
 
-			return $return_data;
+            return apply_filters( 'bigcommerce/pricing/format_price', $return_data, $item );
 		}
 
 		if ( $min_value != $max_value ) {
@@ -215,10 +215,10 @@ class Pricing_Controller extends Rest_Controller {
 				],
 			];
 
-			return $return_data;
+            return apply_filters( 'bigcommerce/pricing/format_price', $return_data, $item );
 		}
 
-		return $return_data;
+        return apply_filters( 'bigcommerce/pricing/format_price', $return_data, $item );
 	}
 
 	/**
