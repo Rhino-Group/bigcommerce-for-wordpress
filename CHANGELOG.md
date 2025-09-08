@@ -1,4 +1,7 @@
 # Changelog
+## [5.0.7.21]
+- Dev - Pricing: Add event trigger to pricing updates.
+- Dev - Add filter to pricing API results formatting.
 ## [5.0.7.20]
 - Fix - Make bi-directional setting never grab from listing data.
 ## [5.0.7.19]
