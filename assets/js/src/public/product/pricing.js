@@ -6,7 +6,7 @@
 import _ from 'lodash';
 import delegate from 'delegate';
 import * as tools from 'utils/tools';
-import { on } from 'utils/events';
+import { on, trigger } from 'utils/events';
 import { wpAPIProductPricing } from 'utils/ajax';
 import { PRICING_API_URL, PRICING_API_NONCE } from '../config/wp-settings';
 
@@ -52,15 +52,15 @@ const getSelectedOptions = (optionsContainer) => {
 		const fieldType = field.dataset.field;
 
 		switch (fieldType) {
-		case 'product-form-option-radio':
-		case 'product-form-option-checkbox':
-			selection = tools.getNodes('input:checked', false, field, true)[0];
-			break;
-		case 'product-form-option-select':
-			selection = tools.getNodes('select', false, field, true)[0];
-			break;
-		default:
-			selection =	'';
+			case 'product-form-option-radio':
+			case 'product-form-option-checkbox':
+				selection = tools.getNodes('input:checked', false, field, true)[0];
+				break;
+			case 'product-form-option-select':
+				selection = tools.getNodes('select', false, field, true)[0];
+				break;
+			default:
+				selection =	'';
 		}
 
 		if (!selection) {
@@ -197,6 +197,8 @@ const filterAPIPricingData = (type = '', APIPricingNode = '', data = {}) => {
 		pricingNodes['price-node'].textContent = '';
 		tools.addClass(pricingNodes['original-price-node'], 'bc-show-current-price');
 		tools.addClass(pricingNodes['sale-node'], 'bc-show-current-price');
+
+		trigger({ event: 'bigcommerce/price/updated', data: { node: APIPricingNode, product: data }, native: false });
 		return;
 	}
 
@@ -206,6 +208,8 @@ const filterAPIPricingData = (type = '', APIPricingNode = '', data = {}) => {
 	pricingNodes['sale-node'].textContent = '';
 	pricingNodes['price-node'].textContent = basePrice;
 	tools.addClass(pricingNodes['price-node'], 'bc-show-current-price');
+
+	trigger({ event: 'bigcommerce/price/updated', data: { node: APIPricingNode, product: data }, native: false });
 };
 
 /**
