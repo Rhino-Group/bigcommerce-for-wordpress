@@ -13,10 +13,10 @@ License:      GPLv2 or later
 use BigCommerce\Pages\Login_Page;
 use BigCommerce\Taxonomies\Channel\BC_Status;
 
-define( 'BIGCOMMERCE_PHP_MINIMUM_VERSION', '7.0' );
-define( 'BIGCOMMERCE_PHP_OPTIMAL_VERSION', '7.4' );
-define( 'BIGCOMMERCE_WP_MINIMUM_VERSION', '4.8' );
-define( 'BIGCOMMERCE_WP_OPTIMAL_VERSION', '5.8' );
+define( 'BIGCOMMERCE_PHP_MINIMUM_VERSION', '8.2' );
+define( 'BIGCOMMERCE_PHP_OPTIMAL_VERSION', '8.4' );
+define( 'BIGCOMMERCE_WP_MINIMUM_VERSION', '6.6' );
+define( 'BIGCOMMERCE_WP_OPTIMAL_VERSION', '6.9' );
 
 if ( version_compare( PHP_VERSION, BIGCOMMERCE_PHP_MINIMUM_VERSION, '<' ) || version_compare( get_bloginfo( 'version' ), BIGCOMMERCE_WP_MINIMUM_VERSION, '<' ) ) {
 	add_action( 'admin_notices', function() {

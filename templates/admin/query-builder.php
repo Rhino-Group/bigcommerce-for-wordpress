@@ -46,7 +46,7 @@ use BigCommerce\Taxonomies\Product_Category\Product_Category;
 				><?php esc_html_e( 'Recent', 'bigcommerce' ); ?></a>
 			</li>
 		<?php endif; ?>
-		<?php if ( $featured ) { ?>
+		<?php if ( $featured instanceof WP_Term ) { ?>
 			<li class="bc-shortcode-ui__query-builder-list-item">
 				<a
 				    href="#"
@@ -58,7 +58,7 @@ use BigCommerce\Taxonomies\Product_Category\Product_Category;
 				><?php esc_html_e( 'Featured', 'bigcommerce' ); ?></a>
 			</li>
 		<?php } ?>
-		<?php if ( $sale ) { ?>
+		<?php if ( $sale instanceof WP_Term ) { ?>
 			<li class="bc-shortcode-ui__query-builder-list-item">
 				<a
 				    href="#"

@@ -367,21 +367,21 @@ class Webhooks extends Provider {
         } ), 10, 1 );
 
 
-		add_action ( sprintf('%s_assigned',Channels_Management_Webhook::PRODUCT_CHANNEL_HOOK ), $this->create_callback( 'product_channel_was_assigned', function ( $product_id, $channel_id ) use ( $container ) {
+		add_action ( sprintf('%s_assigned',Channels_Management_Webhook::PRODUCT_CHANNEL_HOOK ), $this->create_callback( 'product_channel_was_assigned', function ( $product_id, $channel_id, $scope, $action ) use ( $container ) {
 			if ( ! $this->product_webhooks_enabled() ) {
 				return;
 			}
 
-			$container[ self::CHANNEL_PRODUCT_ASSIGNED ]->handle_request( $product_id, $channel_id );
-		} ), 10, 2 );
+			$container[ self::CHANNEL_PRODUCT_ASSIGNED ]->handle_request( $product_id, $channel_id, $scope, $action );
+		} ), 10, 4 );
 
-		add_action ( sprintf( '%s_unassigned', Channels_Management_Webhook::PRODUCT_CHANNEL_HOOK ), $this->create_callback( 'product_channel_was_unassigned', function ( $product_id, $channel_id ) use ( $container ) {
+		add_action ( sprintf( '%s_unassigned', Channels_Management_Webhook::PRODUCT_CHANNEL_HOOK ), $this->create_callback( 'product_channel_was_unassigned', function ( $product_id, $channel_id, $scope, $action ) use ( $container ) {
 			if ( ! $this->product_webhooks_enabled() ) {
 				return;
 			}
 
-			$container[ self::CHANNEL_PRODUCT_UNASSIGNED ]->handle_request( $product_id, $channel_id );
-		} ), 10, 2 );
+			$container[ self::CHANNEL_PRODUCT_UNASSIGNED ]->handle_request( $product_id, $channel_id, $scope, $action );
+		} ), 10, 4 );
 
 		add_action ( Channels_Management_Webhook::CHANNEL_CURRENCY_UPDATE_HOOK, $this->create_callback( 'channel_currency_was_updated', function ( $channel_id ) use ( $container ) {
 			if ( ! $this->product_webhooks_enabled() ) {

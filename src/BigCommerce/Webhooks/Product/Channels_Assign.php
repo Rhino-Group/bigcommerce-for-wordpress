@@ -9,7 +9,7 @@ use BigCommerce\Taxonomies\Channel\Channel;
 
 class Channels_Assign extends Channels_Manager {
 
-	public function handle_request( $product_id, $channel_id ) {
+	public function handle_request( int $product_id, int $channel_id, string $scope = '', string $action = '' ): void {
 		$channel = $this->get_channel( $channel_id );
 
 		if ( empty( $channel ) ) {
@@ -20,34 +20,43 @@ class Channels_Assign extends Channels_Manager {
 			return;
 		}
 
-		$product = $this->maybe_get_existing_product( $product_id );
-
-		if ( ! empty( $product ) && $channel->term_id === $product->get_channel()->term_id ) {
-			do_action( 'bigcommerce/log', Error_Log::INFO, __( 'Product is added to channel already. Start product update', 'bigcommerce' ), [
-				'channel_id' => $channel_id,
-				'product'    => $product_id,
-			], 'webhooks' );
-
-			$this->handle_product_update( $product, $channel );
-
+		$channel_term_id = (int) $channel->term_id;
+		if ( ! $this->acquire_product_import_lock( $product_id, $channel_id, $channel_term_id, $scope, $action ) ) {
 			return;
 		}
 
-		/**
-		 * Product does not exist in channel. Start product import process
-		 */
 		try {
-			$product = $this->catalog_api->getProductById( $product_id, [
-				'include' => [ 'variants', 'custom_fields', 'images', 'videos', 'bulk_pricing_rules', 'options', 'modifiers' ],
-			] )->getData();
+			$product = $this->maybe_get_existing_product( $product_id );
 
-			$this->handle_product_creation( $product, $channel );
-		} catch ( \Exception $e ) {
-			do_action( 'bigcommerce/log', Error_Log::INFO, $e->getMessage(), [
-				'response' => $e->getResponseBody(),
-				'headers'  => $e->getResponseHeaders(),
-			], 'webhooks' );
-			do_action( 'bigcommerce/log', Error_Log::DEBUG, $e->getTraceAsString(), [], 'webhooks' );
+			if ( ! empty( $product ) && $channel->term_id === $product->get_channel()->term_id ) {
+				do_action( 'bigcommerce/log', Error_Log::INFO, __( 'Product is added to channel already. Start product update', 'bigcommerce' ), [
+					'channel_id' => $channel_id,
+					'product'    => $product_id,
+				], 'webhooks' );
+
+				$this->handle_product_update( $product, $channel );
+
+				return;
+			}
+
+			/**
+			 * Product does not exist in channel. Start product import process
+			 */
+			try {
+				$product = $this->catalog_api->getProductById( $product_id, [
+					'include' => [ 'variants', 'custom_fields', 'images', 'videos', 'bulk_pricing_rules', 'options', 'modifiers' ],
+				] )->getData();
+
+				$this->handle_product_creation( $product, $channel );
+			} catch ( \Exception $e ) {
+				do_action( 'bigcommerce/log', Error_Log::INFO, $e->getMessage(), [
+					'response' => $e->getResponseBody(),
+					'headers'  => $e->getResponseHeaders(),
+				], 'webhooks' );
+				do_action( 'bigcommerce/log', Error_Log::DEBUG, $e->getTraceAsString(), [], 'webhooks' );
+			}
+		} finally {
+			$this->release_product_import_lock( $product_id, $channel_id, $channel_term_id, $scope, $action );
 		}
 	}
 

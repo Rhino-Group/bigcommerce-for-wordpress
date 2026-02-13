@@ -10,7 +10,7 @@ use BigCommerce\Taxonomies\Channel\Channel;
 
 class Channels_UnAssign extends Channels_Manager {
 
-	public function handle_request( $product_id, $channel_id ) {
+	public function handle_request( int $product_id, int $channel_id, string $scope = '', string $action = '' ): void {
 		$channel = $this->get_channel( $channel_id );
 
 		if ( empty( $channel ) ) {
