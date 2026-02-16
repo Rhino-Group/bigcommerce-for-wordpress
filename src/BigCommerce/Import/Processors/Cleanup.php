@@ -157,9 +157,8 @@ class Cleanup implements Import_Processor {
 		}
 
 		if ( ! $partially ) {
-			wp_schedule_single_event( time(), Cleanup::CLEAN_PRODUCTS_TRANSIENT, [
-					'offset' => $offset + self::CLEAN_POSTS_PER_PAGE,
-			] );
+			$next_offset = $offset + self::CLEAN_POSTS_PER_PAGE;
+			wp_schedule_single_event( time(), Cleanup::CLEAN_PRODUCTS_TRANSIENT, [ $next_offset ] );
 		}
 	}
 

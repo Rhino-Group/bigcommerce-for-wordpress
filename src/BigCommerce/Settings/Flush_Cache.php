@@ -35,9 +35,7 @@ class Flush_Cache {
 		if ( $submission['action'] === Troubleshooting_Diagnostics::FLUSH_USER ) {
 			wp_schedule_single_event( time(), Cleanup::CLEAN_USERS_TRANSIENT );
 		} elseif ( $submission['action'] === Troubleshooting_Diagnostics::FLUSH_PRODUCTS ) {
-			wp_schedule_single_event( time(), Cleanup::CLEAN_PRODUCTS_TRANSIENT, [
-				'offset' => 0,
-			] );
+			wp_schedule_single_event( time(), Cleanup::CLEAN_PRODUCTS_TRANSIENT, [ 0 ] );
 		}
 
 		$redirect = esc_url_raw( $this->screen_settings->get_url() );

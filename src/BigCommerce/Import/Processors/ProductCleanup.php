@@ -27,10 +27,7 @@ class ProductCleanup {
 			return;
 		}
 
-		wp_schedule_single_event( time(), Cleanup::CLEAN_PRODUCTS_TRANSIENT, [
-			'offset'    => 0,
-			'partially' => true,
-		] );
+		wp_schedule_single_event( time(), Cleanup::CLEAN_PRODUCTS_TRANSIENT, [ 0, true ] );
 
 		foreach ( $terms as $term ) {
 			$existing_products = get_option( $this->get_option_name( $term->term_id ), [] );

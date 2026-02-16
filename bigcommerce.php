@@ -3,9 +3,9 @@
 Plugin Name:  BigCommerce for WordPress (Suma)
 Description:  Scale your ecommerce business with WordPress on the front-end and BigCommerce on the back end. Free up server resources from things like catalog management, processing payments, and managing fulfillment logistics.
 Author:       BigCommerce
-Version:      5.0.7.21
+Version:      6.1.0
 Author URI:   https://www.bigcommerce.com/wordpress
-Requires PHP: 7.4.0
+Requires PHP: 8.4
 Text Domain:  bigcommerce
 License:      GPLv2 or later
 */
@@ -13,7 +13,7 @@ License:      GPLv2 or later
 use BigCommerce\Pages\Login_Page;
 use BigCommerce\Taxonomies\Channel\BC_Status;
 
-define( 'BIGCOMMERCE_PHP_MINIMUM_VERSION', '8.2' );
+define( 'BIGCOMMERCE_PHP_MINIMUM_VERSION', '8.4' );
 define( 'BIGCOMMERCE_PHP_OPTIMAL_VERSION', '8.4' );
 define( 'BIGCOMMERCE_WP_MINIMUM_VERSION', '6.6' );
 define( 'BIGCOMMERCE_WP_OPTIMAL_VERSION', '6.9' );

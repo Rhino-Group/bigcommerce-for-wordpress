@@ -344,8 +344,13 @@ class Webhooks extends Provider {
 				return;
 			}
 
-			$container[ Api::CACHE_HANDLER ]->flush_product_catalog_object_cache( $params['product_id'] );
-			$container[ self::WEBHOOKS_CRON_TASKS ]->set_product_update_cron_task( $params );
+			$product_id = isset( $params['product_id'] ) ? absint( $params['product_id'] ) : 0;
+			if ( $product_id <= 0 ) {
+				return;
+			}
+
+			$container[ Api::CACHE_HANDLER ]->flush_product_catalog_object_cache( $product_id );
+			$container[ self::WEBHOOKS_CRON_TASKS ]->set_product_update_cron_task( $product_id );
 		} ), 10, 1 );
 
         // Delete product webhook
