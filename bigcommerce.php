@@ -16,7 +16,7 @@ use BigCommerce\Taxonomies\Channel\BC_Status;
 define( 'BIGCOMMERCE_PHP_MINIMUM_VERSION', '8.4' );
 define( 'BIGCOMMERCE_PHP_OPTIMAL_VERSION', '8.4' );
 define( 'BIGCOMMERCE_WP_MINIMUM_VERSION', '6.6' );
-define( 'BIGCOMMERCE_WP_OPTIMAL_VERSION', '6.9' );
+define( 'BIGCOMMERCE_WP_OPTIMAL_VERSION', '6.8' );
 
 if ( version_compare( PHP_VERSION, BIGCOMMERCE_PHP_MINIMUM_VERSION, '<' ) || version_compare( get_bloginfo( 'version' ), BIGCOMMERCE_WP_MINIMUM_VERSION, '<' ) ) {
 	add_action( 'admin_notices', function() {
