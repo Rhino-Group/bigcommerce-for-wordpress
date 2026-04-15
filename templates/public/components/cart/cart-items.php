@@ -22,6 +22,9 @@ use BigCommerce\Taxonomies\Brand\Brand;
 			<a
 					href="<?php echo esc_url( get_the_permalink( $item['post_id'] ) ); ?>"
 					class="bc-product__thumbnail-link"
+					aria-label="<?php echo esc_attr( sprintf( __( 'View product: %s', 'bigcommerce' ), $item['name'] ) ); ?>"
+					tabindex="-1"
+					aria-hidden="true"
 			>
 				<?php } ?>
 
@@ -39,8 +42,9 @@ use BigCommerce\Taxonomies\Brand\Brand;
 					data-js="remove-cart-item"
 					data-cart_item_id="<?php echo esc_attr( $item['id'] ); ?>"
 					type="button"
+					aria-label="<?php echo esc_attr( sprintf( __( 'Remove %s from cart', 'bigcommerce' ), $item['name'] ) ); ?>"
 			>
-				<?php esc_html_e( '(Remove)', 'bigcommerce' ); ?>
+				<span aria-hidden="true"><?php esc_html_e( '(Remove)', 'bigcommerce' ); ?></span>
 			</button>
 		</div>
 		<div class="bc-cart-item-meta">

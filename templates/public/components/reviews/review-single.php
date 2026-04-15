@@ -25,9 +25,13 @@ use BigCommerce\Post_Types\Product\Product;
 	<div class="bc-product-review__header">
 		<h4 class="bc-product-review__title"><?php echo esc_html( $title ); ?></h4>
 
-		<div class="bc-single-product__rating bc-product-review__rating">
+		<div
+			class="bc-single-product__rating bc-product-review__rating"
+			role="img"
+			aria-label="<?php echo esc_attr( sprintf( __( 'Rated %s out of 5 stars', 'bigcommerce' ), number_format_i18n( $rating, 1 ) ) ); ?>"
+		>
 			<div class="bc-single-product__rating--mask" style="width: <?php echo (int) $percentage; ?>%">
-				<div class="bc-single-product__rating--top">
+				<div class="bc-single-product__rating--top" aria-hidden="true">
 					<span class="bc-rating-star"></span>
 					<span class="bc-rating-star"></span>
 					<span class="bc-rating-star"></span>
@@ -35,7 +39,7 @@ use BigCommerce\Post_Types\Product\Product;
 					<span class="bc-rating-star"></span>
 				</div>
 			</div>
-			<div class="bc-single-product__rating--bottom">
+			<div class="bc-single-product__rating--bottom" aria-hidden="true">
 				<span class="bc-rating-star"></span>
 				<span class="bc-rating-star"></span>
 				<span class="bc-rating-star"></span>

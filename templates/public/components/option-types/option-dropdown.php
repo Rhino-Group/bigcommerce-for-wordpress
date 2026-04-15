@@ -22,6 +22,7 @@
 			class="bc-product-variant__select"
 			data-js="bc-product-option-field"
 			data-option-id="<?php echo esc_attr( $id ); ?>"
+			<?php if ( $required ) { echo 'required="required" aria-required="true"'; } ?>
 		>
 			<?php foreach ( $options as $option ) { ?>
 				<option value="<?php echo esc_attr( $option['id'] ); ?>"<?php selected( $option['is_default'] ); ?>><?php echo esc_html( $option['label'] ); ?></option>

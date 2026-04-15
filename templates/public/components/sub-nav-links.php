@@ -8,11 +8,11 @@
  */
 
 ?>
-<aside class="bc-subnav">
+<aside class="bc-subnav" aria-label="<?php esc_attr_e( 'Account Navigation', 'bigcommerce' ); ?>">
 	<ul class="bc-subnav__list">
 		<?php foreach ( $links as $link ) { ?>
 			<li class="bc-subnav__list-item <?php echo esc_attr( $link[ 'current' ] ? 'bc-subnav__list-item--current' : '' ); ?>">
-				<a class="bc-link bc-subnav__link" href="<?php echo esc_url( $link[ 'url' ] ); ?>" title="<?php echo esc_attr( $link[ 'label' ] ); ?>"><?php echo esc_html( $link[ 'label' ] ); ?></a>
+				<a class="bc-link bc-subnav__link" href="<?php echo esc_url( $link[ 'url' ] ); ?>"<?php if ( $link['current'] ) { echo ' aria-current="page"'; } ?>><?php echo esc_html( $link[ 'label' ] ); ?></a>
 			</li>
 		<?php } ?>
 	</ul>

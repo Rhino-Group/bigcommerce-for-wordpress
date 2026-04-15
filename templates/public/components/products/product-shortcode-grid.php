@@ -18,7 +18,7 @@
 <div class="bc-load-items bc-shortcode-product-grid-wrapper">
 	<?php if ( ! empty( $pagination ) ) { ?>
 		<!-- class="bc-load-items__loader" is required -->
-		<div class="bc-load-items__loader"></div>
+		<div class="bc-load-items__loader" role="status" aria-live="polite" aria-label="<?php esc_attr_e( 'Loading products', 'bigcommerce' ); ?>"></div>
 	<?php } ?>
 	<!-- class="bc-product-grid bc-load-items-container" and the conditional class "bc-load-items-container--has-pages" are required. -->
 	<div class="bc-product-grid bc-product-grid--<?php echo intval( $columns ); ?>col bc-load-items-container <?php echo ( ! empty( $pagination ) ? esc_attr( 'bc-load-items-container--has-pages' ) : '' ); ?>">

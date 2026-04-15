@@ -11,6 +11,7 @@
 ?>
 <!-- data-js="bc-add-coupon-form" is required -->
 <div class="bc-add-coupon-form" data-js="bc-add-coupon-form" aria-hidden="<?php empty( $coupons ) ? esc_attr_e( 'false' ) : esc_attr_e( 'true' ); ?>">
+	<label for="coupon_code" class="u-bc-screen-reader-text"><?php esc_html_e( 'Coupon Code', 'bigcommerce' ); ?></label>
 	<!-- data-js="bc-coupon-code-field" is required -->
 	<input
 			id="coupon_code"
@@ -18,7 +19,8 @@
 			name="coupon_code"
 			class="bc-coupon-code-field"
 			data-js="bc-coupon-code-field"
-			placeholder="<?php echo esc_attr( 'Enter Coupon Code', 'bigcommerce' ); ?>"
+			placeholder="<?php esc_attr_e( 'Enter Coupon Code', 'bigcommerce' ); ?>"
+			aria-label="<?php esc_attr_e( 'Enter coupon code', 'bigcommerce' ); ?>"
 	>
 	<!-- data-js="bc-coupon-code-submit" is required -->
 	<button

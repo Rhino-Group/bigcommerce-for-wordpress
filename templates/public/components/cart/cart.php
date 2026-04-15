@@ -15,7 +15,7 @@
 
 ?>
 <!-- data-js="bc-cart" is required -->
-<section class="bc-cart" data-js="bc-cart" data-cart_id="<?php echo esc_attr( $cart['cart_id'] ); ?>">
+<section class="bc-cart" data-js="bc-cart" data-cart_id="<?php echo esc_attr( $cart['cart_id'] ); ?>" aria-label="<?php esc_attr_e( 'Shopping Cart', 'bigcommerce' ); ?>" aria-live="polite" aria-relevant="additions removals">
 	<?php
 	echo $error_message;
 	echo $coupon_code;

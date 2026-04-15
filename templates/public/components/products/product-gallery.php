@@ -26,14 +26,14 @@ $has_zoom        = $zoom ? 'bc-product-image-zoom' : '';
 ?>
 
 	<!-- data-js="bc-product-gallery" is required -->
-	<div class="bc-product-gallery__images" data-js="bc-product-gallery">
+	<div class="bc-product-gallery__images" data-js="bc-product-gallery" role="region" aria-label="<?php esc_attr_e( 'Product Images', 'bigcommerce' ); ?>">
 
 		<?php if ( $product->on_sale() ) { ?>
-			<span class="bc-product-flag--sale"><?php esc_html_e( 'SALE', 'bigcommerce' ); ?></span>
+			<span class="bc-product-flag--sale" aria-label="<?php esc_attr_e( 'On Sale', 'bigcommerce' ); ?>"><?php esc_html_e( 'SALE', 'bigcommerce' ); ?></span>
 		<?php } ?>
 
 		<!-- data-js="bc-gallery-container" is required -->
-		<div class="<?php echo esc_attr( $gallery_classes ); ?>" data-js="bc-gallery-container">
+		<div class="<?php echo esc_attr( $gallery_classes ); ?>" data-js="bc-gallery-container" role="group" aria-roledescription="carousel" aria-label="<?php esc_attr_e( 'Product image carousel', 'bigcommerce' ); ?>">
 
 			<!-- class="swiper-wrapper" is required -->
 			<div class="swiper-wrapper" data-js="<?php esc_attr_e( $has_zoom ); ?>">
@@ -44,13 +44,13 @@ $has_zoom        = $zoom ? 'bc-product-image-zoom' : '';
 							$image_full = $zoom && ! empty( $image[ Image_Importer::URL_ZOOM ]  ) ? sprintf( 'data-zoom="%s"', $image[ Image_Importer::URL_ZOOM ] ) : '';
 							?>
 							<!-- class="swiper-slide" is required -->
-							<div class="swiper-slide bc-product-gallery__image-slide" data-index="<?php echo $index++; ?>">
-								<img
-										src="<?php echo esc_url( $image[ Image_Importer::URL_THUMB ] ); ?>" <?php echo $image_full; ?>
-										alt="<?php echo esc_attr( trim( strip_tags( $image[ Image_Importer::IMAGE_ALT ] ) ) ); ?>"
-								>
-							</div>
-						<?php }
+						<div class="swiper-slide bc-product-gallery__image-slide" data-index="<?php echo $index; ?>" role="group" aria-roledescription="slide" aria-label="<?php echo esc_attr( sprintf( __( 'Slide %d of %d', 'bigcommerce' ), $index + 1, $item_count ) ); ?>">
+							<img
+									src="<?php echo esc_url( $image[ Image_Importer::URL_THUMB ] ); ?>" <?php echo $image_full; ?>
+									alt="<?php echo esc_attr( trim( strip_tags( $image[ Image_Importer::IMAGE_ALT ] ) ) ); ?>"
+							>
+						</div>
+					<?php $index++; }
 					} else {
 						foreach ( $image_ids as $image_id ) {
 							if ( ! empty( $cdn_images ) && array_key_exists( $image_id, $cdn_images ) ) {
@@ -65,14 +65,14 @@ $has_zoom        = $zoom ? 'bc-product-image-zoom' : '';
 
 							?>
 							<!-- class="swiper-slide" is required -->
-							<div class="swiper-slide bc-product-gallery__image-slide" data-index="<?php echo $index++; ?>">
-								<img
-										src="<?php echo esc_url( $image_src ); ?>" <?php echo $image_full; ?>
-										alt="<?php echo esc_attr( trim( strip_tags( get_post_meta( $image_id, '_wp_attachment_image_alt', true ) ) ) ); ?>"
-										srcset="<?php echo esc_attr( $image_srcset ); ?>"
-								>
-							</div>
-						<?php }
+						<div class="swiper-slide bc-product-gallery__image-slide" data-index="<?php echo $index; ?>" role="group" aria-roledescription="slide" aria-label="<?php echo esc_attr( sprintf( __( 'Slide %d of %d', 'bigcommerce' ), $index + 1, $item_count ) ); ?>">
+							<img
+									src="<?php echo esc_url( $image_src ); ?>" <?php echo $image_full; ?>
+									alt="<?php echo esc_attr( trim( strip_tags( get_post_meta( $image_id, '_wp_attachment_image_alt', true ) ) ) ); ?>"
+									srcset="<?php echo esc_attr( $image_srcset ); ?>"
+							>
+						</div>
+					<?php $index++;
 						foreach ( $youtube_videos as $video ) { ?>
 							<!-- class="swiper-slide" is required -->
 							<div
@@ -111,10 +111,9 @@ $has_zoom        = $zoom ? 'bc-product-image-zoom' : '';
 							<button class="swiper-slide bc-product-gallery__thumb-slide"
 								data-js="bc-gallery-thumb-trigger"
 								data-index="<?php echo $index++; ?>"
-								aria-label="<?php _e( 'mark as featured image', 'stellar' ) ?>"
-							>
-								<img src="<?php echo $image[ Image_Importer::URL_THUMB ]; ?>" alt="<?php echo $image[ Image_Importer::IMAGE_ALT ]; ?>"
-								>
+							aria-label="<?php echo esc_attr( sprintf( __( 'View image %d', 'bigcommerce' ), $index + 1 ) ); ?>"
+						>
+							<img src="<?php echo esc_url( $image[ Image_Importer::URL_THUMB ] ); ?>" alt="<?php echo esc_attr( trim( strip_tags( $image[ Image_Importer::IMAGE_ALT ] ) ) ); ?>">
 							</button>
 						<?php }
 					} else {
@@ -131,10 +130,9 @@ $has_zoom        = $zoom ? 'bc-product-image-zoom' : '';
 							<button class="swiper-slide bc-product-gallery__thumb-slide"
 								data-js="bc-gallery-thumb-trigger"
 								data-index="<?php echo $index++; ?>"
-								aria-label="<?php _e( 'mark as featured image', 'stellar' ) ?>"
-							>
-								<img src="<?php echo $image_src; ?>" alt="<?php echo $image_alt; ?>"
-								>
+							aria-label="<?php echo esc_attr( ! empty( $image_alt ) ? sprintf( __( 'View image: %s', 'bigcommerce' ), $image_alt ) : sprintf( __( 'View image %d', 'bigcommerce' ), $index + 1 ) ); ?>"
+						>
+							<img src="<?php echo esc_url( $image_src ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>">
 							</button>
 						<?php }
 						foreach ( $youtube_videos as $video ) { ?>
@@ -143,9 +141,9 @@ $has_zoom        = $zoom ? 'bc-product-image-zoom' : '';
 								data-js="bc-gallery-thumb-trigger"
 								data-index="<?php echo $index++; ?>"
 								data-player-id="<?php echo esc_attr( $video['id'] ); ?>"
-								aria-label="<?php echo esc_attr( sprintf( __( 'Play %s', 'bigcommerce' ), $video['title'] ) ); ?>"
-							>
-								<i class="bc-video-play-icon"></i>
+							aria-label="<?php echo esc_attr( sprintf( __( 'Play video: %s', 'bigcommerce' ), $video['title'] ) ); ?>"
+						>
+							<i class="bc-video-play-icon" aria-hidden="true"></i>
 							</button>
 						<?php } ?>
 					<?php } ?>

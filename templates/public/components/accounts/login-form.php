@@ -13,8 +13,7 @@
 			<div class="bc-account-login__form-inner">
 				<?php echo $message; ?>
 				<?php echo $form; ?>
-				<a href="<?php echo esc_url( wp_lostpassword_url( get_permalink() ) ); ?>"
-					 title="<?php echo esc_attr( 'Forgot Password', 'bigcommerce' ); ?>">
+				<a href="<?php echo esc_url( wp_lostpassword_url( get_permalink() ) ); ?>">
 					<?php esc_html_e( 'Forgot your password?', 'bigcommerce' ); ?>
 				</a>
 			</div>
@@ -30,8 +29,7 @@
 						<li><?php esc_html_e( 'Access order history', 'bigcommerce' ); ?></li>
 						<li><?php esc_html_e( 'Track new orders', 'bigcommerce' ); ?></li>
 					</ul>
-					<a class="bc-btn bc-btn--register" href="<?php echo esc_url( $register_link ); ?>"
-						 title="<?php esc_attr( 'Register', 'bigcommerce' ); ?>"><?php esc_html_e( 'Register', 'bigcommerce' ); ?></a>
+				<a class="bc-btn bc-btn--register" href="<?php echo esc_url( $register_link ); ?>"><?php esc_html_e( 'Register', 'bigcommerce' ); ?></a>
 				</div>
 			</div>
 		<?php } ?>

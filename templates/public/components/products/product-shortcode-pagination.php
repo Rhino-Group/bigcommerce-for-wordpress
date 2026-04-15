@@ -19,6 +19,6 @@
 			data-href="<?php echo esc_url( $next_page_url ); ?>"
 	>
 		<?php echo esc_html( apply_filters( 'bigcommerce/shortcode/load_more_text', __( 'Load More Products', 'bigcommerce' ) ) ); ?>
-		<i class="bc-icon icon-bc-chevron-down"></i>
+		<i class="bc-icon icon-bc-chevron-down" aria-hidden="true"></i>
 	</button>
 <?php } ?>

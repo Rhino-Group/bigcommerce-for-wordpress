@@ -42,5 +42,14 @@ class Styles {
 		if ( get_theme_mod( Colors::CSS, Colors::CSS_FULL ) !== Colors::CSS_OFF ) {
 			wp_enqueue_style( 'bigcommerce-styles' );
 		}
+
+		// Enqueue WCAG 2.2 Level AAA accessibility stylesheet after the main stylesheet.
+		$accessibility_src = $this->directory . 'css/bc-accessibility.css';
+		wp_enqueue_style(
+			'bigcommerce-accessibility',
+			$accessibility_src,
+			[ 'bigcommerce-styles' ],
+			$this->version
+		);
 	}
 }

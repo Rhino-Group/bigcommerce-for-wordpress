@@ -28,7 +28,7 @@
 				class="bc-product-option__text"
 				data-js="bc-product-option-field"
 				data-option-id="<?php echo esc_attr( $id ); ?>"
-				<?php if ( $required ) { echo 'required="required"'; } ?>
+				<?php if ( $required ) { echo 'required="required" aria-required="true"'; } ?>
 				<?php checked( $checked ); ?>
 			>
 			<span class="bc-product-option__label--checkbox">

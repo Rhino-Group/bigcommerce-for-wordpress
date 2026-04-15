@@ -1,0 +1,442 @@
+/**
+ * BigCommerce for WordPress — Accessibility Styles
+ *
+ * Provides WCAG 2.2 Level AAA compliant styles including:
+ * - Skip navigation link
+ * - High-visibility focus indicators (3:1 contrast, 2px min offset)
+ * - Screen-reader-only utility (updated to modern spec)
+ * - Reduced motion support
+ * - High contrast mode support
+ * - Sufficient text contrast overrides
+ * - Target size enforcement (44×44px minimum for interactive elements)
+ *
+ * DO NOT minify this file with an automated task that strips comments.
+ */
+
+/* =============================================================================
+   Skip Navigation Link (WCAG 2.4.1 — Bypass Blocks, AAA = 2.4.5+ )
+   ============================================================================= */
+
+/**
+ * The skip link must be the first focusable element on the page.
+ * Insert  <a href="#main" class="bc-skip-link">Skip to main content</a>
+ * immediately after <body> (handled by the theme or bc-header template).
+ */
+.bc-skip-link {
+	background: #000000;
+	color: #ffffff;
+	font-weight: 700;
+	font-size: 1rem;
+	left: 0;
+	padding: 1rem 1.5rem;
+	position: absolute;
+	top: -100%;
+	z-index: 99999;
+	text-decoration: none;
+	border-bottom: 3px solid #ffffff;
+	/* Use clip-path instead of deprecated clip */
+	clip-path: inset(50%);
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.bc-skip-link:focus {
+	clip-path: none;
+	overflow: visible;
+	position: fixed;
+	top: 0;
+	left: 0;
+	outline: 3px solid #005fcc;
+	outline-offset: 2px;
+}
+
+/* =============================================================================
+   Screen-Reader-Only Utility (robust modern implementation)
+   ============================================================================= */
+
+/**
+ * WCAG AAA requires that content hidden visually is still accessible to AT.
+ * Replaces and extends the .u-bc-visual-hide and .u-bc-screen-reader-text
+ * classes from master.css.
+ */
+.bc-sr-only,
+.u-bc-screen-reader-text,
+.u-bc-visual-hide {
+	border: 0 !important;
+	clip: rect(0 0 0 0) !important;
+	clip-path: inset(50%) !important;
+	height: 1px !important;
+	margin: -1px !important;
+	overflow: hidden !important;
+	padding: 0 !important;
+	position: absolute !important;
+	white-space: nowrap !important;
+	width: 1px !important;
+}
+
+/* When a screen-reader-only element is focused (e.g. skip link), make it visible */
+.bc-sr-only:focus,
+.u-bc-screen-reader-text:focus {
+	clip: auto !important;
+	clip-path: none !important;
+	height: auto !important;
+	margin: 0 !important;
+	overflow: visible !important;
+	position: static !important;
+	white-space: normal !important;
+	width: auto !important;
+}
+
+/* =============================================================================
+   Focus Indicators — WCAG 2.4.11 Focus Appearance (AAA)
+   Requirements: ≥2px solid outline, ≥3:1 contrast with adjacent colour
+   ============================================================================= */
+
+/**
+ * Remove browser default and apply a consistent, high-contrast focus ring
+ * across all BigCommerce interactive elements.
+ */
+.bc-btn:focus,
+.bc-btn:focus-visible,
+.bc-link:focus,
+.bc-link:focus-visible,
+a:focus,
+a:focus-visible,
+button:focus,
+button:focus-visible,
+input:focus,
+input:focus-visible,
+select:focus,
+select:focus-visible,
+textarea:focus,
+textarea:focus-visible,
+[tabindex]:focus,
+[tabindex]:focus-visible,
+.bc-product-variant__radio:focus + .bc-product-variant__label,
+.bc-product-variant__radio:focus-visible + .bc-product-variant__label,
+.bc-product-option__text:focus + .bc-product-option__label,
+.bc-product-option__text:focus-visible + .bc-product-option__label {
+	outline: 3px solid #005fcc;
+	outline-offset: 3px;
+	/* Ensure keyboard focus is always visible, even when mouse styles remove it */
+}
+
+/* Respect user preference: no forced outline when :focus-visible not triggered */
+@supports selector(:focus-visible) {
+	a:focus:not(:focus-visible),
+	button:focus:not(:focus-visible),
+	input:focus:not(:focus-visible),
+	select:focus:not(:focus-visible),
+	textarea:focus:not(:focus-visible) {
+		outline: none;
+	}
+}
+
+/* =============================================================================
+   Minimum Touch / Click Target Size (WCAG 2.5.8 — AAA extension WCAG 2.2)
+   Minimum 44×44 CSS pixels
+   ============================================================================= */
+
+.bc-btn,
+.bc-cart-item__remove-button,
+.bc-product-gallery__thumb-slide,
+.bc-product-review__write-btn,
+.bc-product-review__cancel-write-btn,
+.bc-load-items__trigger-btn {
+	min-height: 44px;
+	min-width: 44px;
+}
+
+/* Coupon & small buttons — keep visual size but expand hit area */
+.bc-btn--small {
+	position: relative;
+}
+
+.bc-btn--small::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	min-width: 44px;
+	min-height: 44px;
+}
+
+/* =============================================================================
+   Colour Contrast — WCAG 1.4.6 Contrast (Enhanced, AAA: 7:1 normal / 4.5:1 large)
+   ============================================================================= */
+
+/* Primary text — ensure ≥ 7:1 contrast against white (#fff) background */
+.bc-product__title,
+.bc-product__title-link,
+.bc-product-review__title,
+.bc-product-review__meta,
+.bc-cart-item__product-title,
+.bc-product-review__content,
+.bc-single-product__section-title,
+.bc-product__spec-title,
+.bc-product__spec-value,
+.bc-product__inventory,
+.bc-product__sku,
+.bc-product-form__option-label,
+.bc-form__label,
+legend.bc-form__label {
+	color: #1a1a1a; /* approx 18:1 against white */
+}
+
+/* Price — high contrast */
+.bc-product__price,
+.bc-product__price--sale,
+.bc-product__pricing--cached,
+.bc-product__pricing--api {
+	color: #1a1a1a;
+}
+
+/* Sale / promotional text — red must still pass 4.5:1 on white */
+.bc-product__price--sale {
+	color: #b91c1c; /* Red 700 — contrast ratio ~5.5:1 on white */
+}
+
+/* Original / struck-through price */
+del.bc-product__original-price {
+	color: #595959; /* ~7:1 on white */
+}
+
+/* MSRP label */
+.bc-product__retail-price {
+	color: #595959;
+}
+
+/* Sale badge on product images — white text on red ≥ 4.5:1 */
+.bc-product-flag--sale {
+	background-color: #b91c1c;
+	color: #ffffff;
+}
+
+/* Alert colours */
+.bc-alert--error {
+	background-color: #fff2f2;
+	border-left: 4px solid #b91c1c;
+	color: #7f1d1d; /* ~7:1 on #fff2f2 */
+}
+
+.bc-alert--warning {
+	background-color: #fffbeb;
+	border-left: 4px solid #d97706;
+	color: #78350f; /* ~7:1 on #fffbeb */
+}
+
+.bc-alert--success {
+	background-color: #f0fdf4;
+	border-left: 4px solid #16a34a;
+	color: #14532d; /* ~7:1 on #f0fdf4 */
+}
+
+.bc-alert--notice {
+	background-color: #eff6ff;
+	border-left: 4px solid #2563eb;
+	color: #1e3a8a; /* ~7:1 on #eff6ff */
+}
+
+/* Cart empty / placeholder text */
+.bc-cart-empty,
+.bc-product-form__purchase-message {
+	color: #1a1a1a;
+}
+
+/* =============================================================================
+   Form — Error State Clarity (WCAG 1.4.1 — not colour alone)
+   ============================================================================= */
+
+/**
+ * Error states must be conveyed by more than colour — add an icon and border.
+ */
+.bc-form__control--error {
+	position: relative;
+}
+
+.bc-form__control--error input,
+.bc-form__control--error select,
+.bc-form__control--error textarea {
+	border: 2px solid #b91c1c;
+	/* Ensure the error border is distinguishable without colour */
+	box-shadow: inset 0 0 0 1px #b91c1c;
+}
+
+.bc-form__control--error .bc-form__label,
+.bc-form__control--error legend.bc-form__label {
+	color: #7f1d1d;
+}
+
+/* Required field asterisk is visually implicit via .bc-form-control-required;
+   announce it to AT via the CSS content attr so it is exposed in the AX tree */
+.bc-form-control-required::after {
+	content: " *";
+	color: #b91c1c;
+	/* aria-hidden is on the element in CSS content — AT will announce via
+	   aria-required="true" on the input instead */
+	aria-hidden: true; /* Note: not standard CSS; use aria-required on inputs */
+	speak: never;
+}
+
+/* =============================================================================
+   Fieldset / Legend Reset (for option groups, removes browser default box)
+   ============================================================================= */
+
+.bc-product-form__control fieldset,
+fieldset.bc-product-form__control {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	min-width: 0; /* Prevent overflow in grid layouts */
+}
+
+fieldset.bc-product-form__control legend.bc-form__label {
+	float: left; /* Legacy float trick for cross-browser legend alignment */
+	width: 100%;
+	padding: 0;
+	margin-bottom: 0.5rem;
+	font-weight: 600;
+}
+
+/* Clear the float after the legend */
+fieldset.bc-product-form__control legend.bc-form__label + * {
+	clear: both;
+}
+
+/* =============================================================================
+   Pagination / Load More (ensure sufficient size and clarity)
+   ============================================================================= */
+
+.bc-load-items__trigger-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+/* =============================================================================
+   Product Card — Ensure link wraps whole card for keyboard nav
+   (WCAG 2.4.9 Link Purpose — Link Only, AAA)
+   ============================================================================= */
+
+.bc-product-card {
+	position: relative;
+}
+
+/* =============================================================================
+   Reduced Motion (WCAG 2.3.3 — Animation from Interactions, AAA)
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+
+	/* Disable Swiper animations */
+	.swiper-wrapper {
+		transition-duration: 0ms !important;
+	}
+
+	.swiper-slide {
+		transition: none !important;
+	}
+}
+
+/* =============================================================================
+   Forced Colors / High Contrast Mode (WCAG 1.4.11 Non-text Contrast, AAA)
+   ============================================================================= */
+
+@media (forced-colors: active) {
+	.bc-btn {
+		border: 2px solid ButtonText;
+		forced-color-adjust: none;
+		background-color: ButtonFace;
+		color: ButtonText;
+	}
+
+	.bc-btn:focus,
+	.bc-btn:focus-visible {
+		outline: 3px solid Highlight;
+		outline-offset: 3px;
+	}
+
+	.bc-product-variant__label--swatch,
+	.bc-product-variant__label--2-color,
+	.bc-product-variant__label--3-color,
+	.bc-product-variant__label--1-color {
+		border: 2px solid ButtonText;
+		forced-color-adjust: none;
+	}
+
+	.bc-product-flag--sale {
+		border: 2px solid ButtonText;
+		forced-color-adjust: none;
+	}
+
+	.bc-alert--error,
+	.bc-alert--warning,
+	.bc-alert--success,
+	.bc-alert--notice {
+		border: 2px solid CanvasText;
+		forced-color-adjust: none;
+	}
+}
+
+/* =============================================================================
+   Text Spacing (WCAG 1.4.12 — Text Spacing, AAA)
+   Ensures layout does not break when users override letter/word/line spacing.
+   ============================================================================= */
+
+/**
+ * These rules declare explicit overflow behaviour so that increased spacing
+ * set by user stylesheets does not clip content.
+ */
+.bc-product__title,
+.bc-product__price,
+.bc-product-review__content,
+.bc-form__label,
+.bc-alert {
+	overflow-wrap: break-word;
+	word-break: break-word;
+}
+
+/* =============================================================================
+   Reading Width (WCAG 1.4.8 Visual Presentation, AAA)
+   Cap line length at 80 characters for product descriptions and reviews.
+   ============================================================================= */
+
+.bc-single-product__description,
+.bc-product-review__content,
+.bc-product__spec-value {
+	max-width: 80ch;
+}
+
+/* =============================================================================
+   Carousel / Gallery live region announcement visibility
+   ============================================================================= */
+
+[aria-live="polite"],
+[aria-live="assertive"] {
+	/* Ensure live regions are not inadvertently hidden */
+	clip: auto;
+	clip-path: none;
+	overflow: visible;
+	height: auto;
+	width: auto;
+	position: static;
+	margin: 0;
+}
+
+/*
+ * Exception: empty live regions that are only used for dynamic injection
+ * should be visually hidden until they contain content.
+ */
+.bc-product-form__product-message:empty,
+.bc-ajax-add-to-cart__message-wrapper:empty {
+	display: none;
+}

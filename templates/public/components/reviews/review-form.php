@@ -15,14 +15,14 @@ use BigCommerce\Post_Types\Product\Product;
 $error_class = 'bc-form__control--error'; // REQUIRED
 ?>
 <!-- data-js="bc-product-review-write" is required -->
-<button class="bc-link bc-product-review__write-btn" data-js="bc-product-review-write">
+<button class="bc-link bc-product-review__write-btn" data-js="bc-product-review-write" aria-expanded="false" aria-controls="bc-product-review-form-inner">
 	<?php echo esc_html( __( 'Write a Review', 'bigcommerce' ) ); ?>
 </button>
 
 <?php echo $messages; ?>
 
 <!-- class="bc-product-review-form" is required -->
-<div class="bc-product-review-form">
+<div class="bc-product-review-form" id="bc-product-review-form-inner">
 	<h3 class="h1 bc-product-review-form__title"> <?php echo esc_html( 'Write A Review', 'bigcommerce' ); ?></h3>
 	<form action="" enctype="multipart/form-data" method="post" class="bc-form">
 		<?php wp_nonce_field( 'product-review' . $product->post_id() ); ?>
@@ -37,7 +37,7 @@ $error_class = 'bc-form__control--error'; // REQUIRED
 				class="bc-form__control <?php if ( in_array( 'rating', $errors ) ) { echo esc_attr( $error_class ); } ?>"
 		>
 			<span class="bc-form__label bc-review-rating__form-label bc-form-control-required"><?php echo esc_html( __( 'Rating:', 'bigcommerce' ) ); ?></span>
-			<select name="bc-review[rating]" id="bc-review-rating" data-form-field="bc-form-field-rating">
+			<select name="bc-review[rating]" id="bc-review-rating" data-form-field="bc-form-field-rating" required="required" aria-required="true" <?php if ( in_array( 'rating', $errors ) ) { echo 'aria-invalid="true"'; } ?>>
 				<option value="0"><?php echo esc_html( __( 'Select Rating', 'bigcommerce' ) ); ?></option>
 				<?php foreach ( $options as $key => $value ) { ?>
 					<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $defaults['rating'], $value, true ); ?>><?php echo esc_html( $value ); ?></option>
@@ -55,6 +55,10 @@ $error_class = 'bc-form__control--error'; // REQUIRED
 					id="bc-review-name"
 					value="<?php echo esc_attr( $defaults['name'] ); ?>"
 					data-form-field="bc-form-field-name"
+					required="required"
+					aria-required="true"
+					autocomplete="name"
+					<?php if ( in_array( 'name', $errors ) ) { echo 'aria-invalid="true"'; } ?>
 			/>
 		</label>
 		<label
@@ -68,6 +72,10 @@ $error_class = 'bc-form__control--error'; // REQUIRED
 					id="bc-review-email"
 					value="<?php echo esc_attr( $defaults['email'] ); ?>"
 					data-form-field="bc-form-field-email"
+					required="required"
+					aria-required="true"
+					autocomplete="email"
+					<?php if ( in_array( 'email', $errors ) ) { echo 'aria-invalid="true"'; } ?>
 			/>
 		</label>
 		<label
@@ -81,6 +89,9 @@ $error_class = 'bc-form__control--error'; // REQUIRED
 					id="bc-review-subject"
 					value="<?php echo esc_attr( $defaults['subject'] ); ?>"
 					data-form-field="bc-form-field-subject"
+					required="required"
+					aria-required="true"
+					<?php if ( in_array( 'subject', $errors ) ) { echo 'aria-invalid="true"'; } ?>
 			/>
 		</label>
 		<label
@@ -92,6 +103,9 @@ $error_class = 'bc-form__control--error'; // REQUIRED
 					name="bc-review[content]"
 					id="bc-review-content"
 					data-form-field="bc-form-field-content"
+					required="required"
+					aria-required="true"
+					<?php if ( in_array( 'content', $errors ) ) { echo 'aria-invalid="true"'; } ?>
 			><?php echo esc_textarea( $defaults['content'] ); ?></textarea>
 		</label>
 

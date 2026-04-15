@@ -18,15 +18,23 @@ use BigCommerce\Post_Types\Product\Product;
 <p class="bc-product__pricing--cached <?php echo sanitize_html_class( $visible ); ?>" data-js="bc-cached-product-pricing">
 <?php if ( $retail_price ) { ?>
 	<!-- class="bc-product__retail-price" is required --><!-- class="bc-product__retail-price-value" is required -->
-	<span class="bc-product__retail-price"><?php esc_html_e( 'MSRP:', 'bigcommerce' ); ?> <span class="bc-product__retail-price-value"><?php echo esc_html( $retail_price ); ?></span></span>
+	<span class="bc-product__retail-price">
+		<span class="u-bc-screen-reader-text"><?php esc_html_e( 'Manufacturer Suggested Retail Price:', 'bigcommerce' ); ?></span>
+		<span aria-hidden="true"><?php esc_html_e( 'MSRP:', 'bigcommerce' ); ?></span>
+		<span class="bc-product__retail-price-value"><?php echo esc_html( $retail_price ); ?></span>
+	</span>
 <?php } ?>
 <?php if ( $product->on_sale() ) { ?>
 	<!-- class="bc-product__original-price" is required. -->
-	<span class="bc-product__original-price"><?php echo esc_html( $price_range ) ?></span>
+	<del class="bc-product__original-price">
+		<span class="u-bc-screen-reader-text"><?php esc_html_e( 'Original price:', 'bigcommerce' ); ?></span>
+		<?php echo esc_html( $price_range ); ?>
+	</del>
 	<!-- class="bc-product__price" is required. -->
-	<span class="bc-product__price bc-product__price--sale">
+	<ins class="bc-product__price bc-product__price--sale" style="text-decoration: none;">
+		<span class="u-bc-screen-reader-text"><?php esc_html_e( 'Sale price:', 'bigcommerce' ); ?></span>
 		<?php echo esc_html( $calculated_price_range ); ?>
-	</span>
+	</ins>
 <?php } else { ?>
 	<!-- class="bc-product__price" is required. -->
 	<span class="bc-product__price"><?php echo esc_html( $calculated_price_range ); ?></span>
@@ -34,13 +42,21 @@ use BigCommerce\Post_Types\Product\Product;
 </p>
 
 <!-- data-pricing-api-product-id & data-js="bc-api-product-pricing" is required. -->
-<p class="bc-product__pricing--api" data-js="bc-api-product-pricing" data-pricing-api-product-id="<?php echo esc_attr( $product->bc_id() ); ?>">
+<p class="bc-product__pricing--api" data-js="bc-api-product-pricing" data-pricing-api-product-id="<?php echo esc_attr( $product->bc_id() ); ?>" aria-live="polite" aria-atomic="true">
 	<!-- class="bc-product__retail-price" is required --><!-- class="bc-product__retail-price-value" is required -->
-	<span class="bc-product__retail-price"><?php esc_html_e( 'MSRP:', 'bigcommerce' ); ?> <span class="bc-product__retail-price-value"></span></span>
+	<span class="bc-product__retail-price">
+		<span class="u-bc-screen-reader-text"><?php esc_html_e( 'Manufacturer Suggested Retail Price:', 'bigcommerce' ); ?></span>
+		<span aria-hidden="true"><?php esc_html_e( 'MSRP:', 'bigcommerce' ); ?></span>
+		<span class="bc-product__retail-price-value"></span>
+	</span>
 	<!-- class="bc-product-price bc-product__price--base" is required -->
 	<span class="bc-product-price bc-product__price--base"></span>
 	<!-- class="bc-product__original-price" is required -->
-	<span class="bc-product__original-price"></span>
+	<del class="bc-product__original-price">
+		<span class="u-bc-screen-reader-text"><?php esc_html_e( 'Original price:', 'bigcommerce' ); ?></span>
+	</del>
 	<!-- class="bc-product-price bc-product__price--sale" is required -->
-	<span class="bc-product__price bc-product__price--sale"></span>
+	<ins class="bc-product__price bc-product__price--sale" style="text-decoration: none;">
+		<span class="u-bc-screen-reader-text"><?php esc_html_e( 'Sale price:', 'bigcommerce' ); ?></span>
+	</ins>
 </p>

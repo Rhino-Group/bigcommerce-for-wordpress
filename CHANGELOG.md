@@ -1,4 +1,42 @@
 # Changelog
+## [6.2.0] - 2026-04-15
+
+### Added — WCAG 2.2 Level AAA Accessibility (ADA Compliance)
+- New `assets/css/bc-accessibility.css` auto-enqueued after main stylesheet with:
+  - Skip navigation link styles (`.bc-skip-link`)
+  - WCAG AAA focus indicator: 3px solid `#005fcc` with 3px offset on all interactive elements
+  - Minimum 44×44px touch/click target sizes for buttons (WCAG 2.5.8)
+  - 7:1 contrast ratio colour tokens for all body text (WCAG 1.4.6)
+  - Semantic error/warning/success/notice alert colours meeting AAA ratios
+  - `prefers-reduced-motion` support disabling Swiper transitions (WCAG 2.3.3)
+  - Forced-colors / High Contrast Mode support (WCAG 1.4.11)
+  - `max-width: 80ch` on descriptions/reviews for reading line length (WCAG 1.4.8)
+  - Text spacing overflow protection (WCAG 1.4.12)
+- `Styles.php`: always enqueue `bigcommerce-accessibility` stylesheet
+
+### Fixed — Template ARIA & Semantic HTML
+- **`product-gallery.php`**: Added `role="region"` + `aria-label` to gallery wrapper; `role="group"` + `aria-roledescription="carousel"` to Swiper container; `role="group"` + `aria-label="Slide N of N"` to each slide; improved thumbnail button aria-labels; `aria-hidden="true"` on video play icon; `aria-label` on sale badge
+- **`product-price.php`**: Replaced `<span>` sale/original-price elements with semantic `<del>` / `<ins>`; added screen-reader-only price context labels; added `aria-live="polite" aria-atomic="true"` to API pricing container; fixed MSRP label rendering when value is empty
+- **`product-form.php`**: Added `aria-label` to form; `role="status" aria-live="polite"` to product message; `role="alert" aria-live="assertive"` to AJAX add-to-cart message; unique quantity `id` scoped to product post ID; added `aria-label` to quantity input
+- **`option-swatch.php`**, **`option-radios.php`**, **`option-rectangles.php`**: Converted `<div>/<span>` wrapper to `<fieldset>/<legend>` for proper radio-group semantics; added `aria-required="true"` to fieldset when required
+- **`option-checkbox.php`**: Added `aria-required="true"` and `required` attribute when field is required
+- **`option-dropdown.php`**: Added `required` and `aria-required="true"` when field is required
+- **`product-rating.php`** (single product): Added `role="img"` + `aria-label="Rated X out of 5 stars, based on N reviews"` to rating container; `aria-hidden="true"` on decorative star spans
+- **`product-shortcode-grid.php`**: Added `role="status" aria-live="polite"` + `aria-label` to loader element
+- **`product-shortcode-pagination.php`**: Added `aria-hidden="true"` to chevron icon inside Load More button
+- **`cart.php`**: Added `aria-label="Shopping Cart"`, `aria-live="polite"`, `aria-relevant="additions removals"` to cart section
+- **`mini-cart.php`**: Added `aria-label="Mini Cart"`, `aria-live="polite"`, `aria-relevant` to mini-cart section
+- **`cart-header.php`**: Replaced `<header>` with `<div role="row">`; added `role="columnheader"` to each header cell
+- **`cart-items.php`**: Added descriptive `aria-label="Remove {product name} from cart"` to remove buttons; added `aria-hidden="true"` and `tabindex="-1"` to duplicate thumbnail image links (title link is the accessible target)
+- **`coupon-code.php`**: Added visually hidden `<label>` for coupon input; fixed `esc_attr_e` placeholder function call; added `aria-label` to input
+- **`message.php`**: Added `role="alert" aria-live="assertive"` for errors/warnings; `role="status" aria-live="polite"` for notices/successes; added `aria-atomic="true"` to all message wrappers
+- **`login-form.php`**: Removed redundant `title` attribute on Forgot Password link and Register button (previously using wrong `esc_attr()` instead of `esc_attr__()`)
+- **`registration-form.php`**: Added `required`, `aria-required="true"`, `aria-invalid="true"` (on error), and `autocomplete` tokens to all form fields
+- **`review-single.php`**: Added `role="img"` + `aria-label="Rated X out of 5 stars"` to inline review rating; `aria-hidden="true"` on decorative star spans
+- **`review-form.php`**: Added `aria-expanded="false"` + `aria-controls` to Write a Review toggle button; added `id` to review form container; added `required`, `aria-required="true"`, `aria-invalid` (on error), and `autocomplete` to all required fields
+- **`sub-nav-links.php`**: Added `aria-label="Account Navigation"` to `<aside>`; added `aria-current="page"` to active link; removed redundant `title` attribute on links
+- **`currency-switcher-form.php`**: Added `id="bc-currency-code"` to `<select>` to match existing `<label for="bc-currency-code">`; added `aria-label` to section wrapper
+
 ## [6.1.0] - 2026-02-16
 
 ### Fixed
