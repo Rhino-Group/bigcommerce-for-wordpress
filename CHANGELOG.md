@@ -1,4 +1,21 @@
 # Changelog
+## [6.1.3] - 2026-04-17
+
+### Added
+- Build script `package-plugin.ps1` for creating distributable ZIP packages.
+
+## [6.1.2] - 2026-04-17
+
+### Changed
+- Pricing API: Converted frontend requests from POST to GET for native CDN URL-based caching.
+- Pricing API: Added `sanitize_items_param()` and `validate_items_param()` to handle JSON-encoded query string for GET requests.
+
+## [6.1.1] - 2026-04-17
+
+### Added
+- Pricing API: Added `X-BC-Pricing-Key` cache differentiation header (request and response) for Imperva CDN caching.
+- Pricing API: Implemented djb2 hash algorithm in both PHP and JS for deterministic cache key generation based on product IDs, options, and values.
+
 ## [6.1.0] - 2026-02-16
 
 ### Fixed
