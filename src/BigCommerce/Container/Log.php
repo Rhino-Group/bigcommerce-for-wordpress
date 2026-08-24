@@ -21,7 +21,8 @@ class Log extends Provider {
 		$container[ self::LOG_PATH ] = function ( Container $container ) {
 			$log_path = bigcommerce_get_env( 'BIGCOMMERCE_DEBUG_LOG' );
 			if ( empty( $log_path ) ) {
-				$log_path = trailingslashit( wp_upload_dir()[ 'basedir' ] ) . 'logs/bigcommerce/debug.log';
+				$date = date( 'Y-m-d' );
+				$log_path = trailingslashit( wp_upload_dir()[ 'basedir' ] ) . 'logs/bigcommerce/debug-' . $date . '.log';
 			}
 
 			/**

@@ -344,8 +344,13 @@ class Webhooks extends Provider {
 				return;
 			}
 
-			$container[ Api::CACHE_HANDLER ]->flush_product_catalog_object_cache( $params['product_id'] );
-			$container[ self::WEBHOOKS_CRON_TASKS ]->set_product_update_cron_task( $params );
+			$product_id = isset( $params['product_id'] ) ? absint( $params['product_id'] ) : 0;
+			if ( $product_id <= 0 ) {
+				return;
+			}
+
+			$container[ Api::CACHE_HANDLER ]->flush_product_catalog_object_cache( $product_id );
+			$container[ self::WEBHOOKS_CRON_TASKS ]->set_product_update_cron_task( $product_id );
 		} ), 10, 1 );
 
         // Delete product webhook
@@ -367,21 +372,21 @@ class Webhooks extends Provider {
         } ), 10, 1 );
 
 
-		add_action ( sprintf('%s_assigned',Channels_Management_Webhook::PRODUCT_CHANNEL_HOOK ), $this->create_callback( 'product_channel_was_assigned', function ( $product_id, $channel_id ) use ( $container ) {
+		add_action ( sprintf('%s_assigned',Channels_Management_Webhook::PRODUCT_CHANNEL_HOOK ), $this->create_callback( 'product_channel_was_assigned', function ( $product_id, $channel_id, $scope, $action ) use ( $container ) {
 			if ( ! $this->product_webhooks_enabled() ) {
 				return;
 			}
 
-			$container[ self::CHANNEL_PRODUCT_ASSIGNED ]->handle_request( $product_id, $channel_id );
-		} ), 10, 2 );
+			$container[ self::CHANNEL_PRODUCT_ASSIGNED ]->handle_request( $product_id, $channel_id, $scope, $action );
+		} ), 10, 4 );
 
-		add_action ( sprintf( '%s_unassigned', Channels_Management_Webhook::PRODUCT_CHANNEL_HOOK ), $this->create_callback( 'product_channel_was_unassigned', function ( $product_id, $channel_id ) use ( $container ) {
+		add_action ( sprintf( '%s_unassigned', Channels_Management_Webhook::PRODUCT_CHANNEL_HOOK ), $this->create_callback( 'product_channel_was_unassigned', function ( $product_id, $channel_id, $scope, $action ) use ( $container ) {
 			if ( ! $this->product_webhooks_enabled() ) {
 				return;
 			}
 
-			$container[ self::CHANNEL_PRODUCT_UNASSIGNED ]->handle_request( $product_id, $channel_id );
-		} ), 10, 2 );
+			$container[ self::CHANNEL_PRODUCT_UNASSIGNED ]->handle_request( $product_id, $channel_id, $scope, $action );
+		} ), 10, 4 );
 
 		add_action ( Channels_Management_Webhook::CHANNEL_CURRENCY_UPDATE_HOOK, $this->create_callback( 'channel_currency_was_updated', function ( $channel_id ) use ( $container ) {
 			if ( ! $this->product_webhooks_enabled() ) {
@@ -401,9 +406,12 @@ class Webhooks extends Provider {
 			return new Product_Updater( $container[ Api::FACTORY ]->catalog(), $container[ Api::FACTORY ]->channels() );
 		};
 
-		if ( ! $this->product_webhooks_enabled() ) {
-			return;
-		}
+        /**
+         This conditional prevents manual resyncing of products, so it's being suppressed
+        if ( ! $this->product_webhooks_enabled() ) {
+        return;
+        }
+        */
 
 		add_action( Webhook_Cron_Tasks::UPDATE_PRODUCT, $this->create_callback( 'update_product_cron_handler', function ( $product_id ) use ( $container ) {
             $container[ self::PRODUCT_UPDATER ]->update( $product_id );

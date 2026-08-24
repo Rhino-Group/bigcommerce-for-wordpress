@@ -45,15 +45,14 @@ class Pricing_Controller extends Rest_Controller {
 	}
 
 	/**
-	 * Nonce should always be on non-headless setup or if it is enabled via Customizer
+	 * Nonce is enabled or disabled via Customizer
 	 *
 	 * @return bool
 	 */
 	public function is_nonce_enabled(): bool {
-		$is_headless = ( int ) get_option( Import::HEADLESS_FLAG, 0 ) === 1;
-		$is_nonce_on = get_option( Product_Single::ENABLE_PRICE_NONCE, 'yes' ) === 'yes';
 
-		return ! $is_headless || $is_nonce_on;
+        // 2024-08-01: Allow changing nonce setting regardless of import mode. Needed for full-page caching.
+		return get_option( Product_Single::ENABLE_PRICE_NONCE, 'yes' ) === 'yes';
 	}
 
 	public function register_routes() {
@@ -111,7 +110,18 @@ class Pricing_Controller extends Rest_Controller {
 				'items' => $items,
 			];
 
-			return rest_ensure_response( $response );
+			$rest_response = rest_ensure_response( $response );
+
+			// Add cache differentiation header for Imperva CDN caching.
+			$incoming_cache_key = $request->get_header( 'X_BC_Pricing_Key' );
+			if ( ! empty( $incoming_cache_key ) ) {
+				$cache_key = sanitize_text_field( $incoming_cache_key );
+			} else {
+				$cache_key = $this->generate_pricing_cache_key( $args['items'] );
+			}
+			$rest_response->header( 'X-BC-Pricing-Key', $cache_key );
+
+			return $rest_response;
 		} catch ( \Exception $e ) {
 			return new \WP_Error( 'gateway_error', $e->getMessage(), [ 'exception' => $e ] );
 		}
@@ -133,6 +143,65 @@ class Pricing_Controller extends Rest_Controller {
 		}, $items );
 
 		return $items;
+	}
+
+	/**
+	 * Generate a deterministic cache key from pricing request items.
+	 *
+	 * Normalizes the items array (sorted by product_id, options sorted by option_id)
+	 * and produces a djb2 hash as a base-36 string. This key is used as an
+	 * X-BC-Pricing-Key header so Imperva can cache POST responses per unique
+	 * product/option combination.
+	 *
+	 * @param array $items The pricing request items array.
+	 *
+	 * @return string The base-36 encoded djb2 hash of the normalized items.
+	 */
+	private function generate_pricing_cache_key( array $items ): string {
+		// Normalize each item to only include cache-relevant fields.
+		$normalized_items = array_map( function ( array $item ): array {
+			$normalized_item = [
+				'product_id' => (int) ( $item['product_id'] ?? 0 ),
+			];
+
+			if ( ! empty( $item['variant_id'] ) ) {
+				$normalized_item['variant_id'] = (int) $item['variant_id'];
+			}
+
+			if ( ! empty( $item['options'] ) && is_array( $item['options'] ) ) {
+				$options = array_map( function ( array $option ): array {
+					return [
+						'option_id' => (int) ( $option['option_id'] ?? 0 ),
+						'value_id'  => (int) ( $option['value_id'] ?? 0 ),
+					];
+				}, $item['options'] );
+
+				// Sort options by option_id for deterministic ordering.
+				usort( $options, function ( array $option_a, array $option_b ): int {
+					return $option_a['option_id'] <=> $option_b['option_id'];
+				} );
+
+				$normalized_item['options'] = $options;
+			}
+
+			return $normalized_item;
+		}, $items );
+
+		// Sort items by product_id for deterministic ordering.
+		usort( $normalized_items, function ( array $item_a, array $item_b ): int {
+			return $item_a['product_id'] <=> $item_b['product_id'];
+		} );
+
+		$json_string = wp_json_encode( $normalized_items );
+
+		// djb2 hash algorithm — matches the JavaScript implementation.
+		$hash = 5381;
+		$length = strlen( $json_string );
+		for ( $index = 0; $index < $length; $index++ ) {
+			$hash = ( ( $hash << 5 ) + $hash + ord( $json_string[ $index ] ) ) & 0xFFFFFFFF;
+		}
+
+		return base_convert( (string) $hash, 10, 36 );
 	}
 
 	private function get_channel_id() {
@@ -184,22 +253,6 @@ class Pricing_Controller extends Rest_Controller {
 			'formatted' => $this->format_currency( $retail_value ),
 		];
 
-		if ( $min_value != $max_value ) {
-			$return_data['display_type'] = 'price_range';
-			$return_data['price_range']  = [
-				'min' => [
-					'raw'       => $min_value,
-					'formatted' => $this->format_currency( $min_value ),
-				],
-				'max' => [
-					'raw'       => $max_value,
-					'formatted' => $this->format_currency( $max_value ),
-				],
-			];
-
-			return $return_data;
-		}
-
 		$return_data['display_type']     = 'simple';
 		$return_data['calculated_price'] = [
 			'raw'       => $calculated_value,
@@ -215,9 +268,27 @@ class Pricing_Controller extends Rest_Controller {
 				'raw'       => $original_value,
 				'formatted' => $this->format_currency( $original_value ),
 			];
+
+            return apply_filters( 'bigcommerce/pricing/format_price', $return_data, $item );
 		}
 
-		return $return_data;
+		if ( $min_value != $max_value ) {
+			$return_data['display_type'] = 'price_range';
+			$return_data['price_range']  = [
+				'min' => [
+					'raw'       => $min_value,
+					'formatted' => $this->format_currency( $min_value ),
+				],
+				'max' => [
+					'raw'       => $max_value,
+					'formatted' => $this->format_currency( $max_value ),
+				],
+			];
+
+            return apply_filters( 'bigcommerce/pricing/format_price', $return_data, $item );
+		}
+
+        return apply_filters( 'bigcommerce/pricing/format_price', $return_data, $item );
 	}
 
 	/**
@@ -250,16 +321,62 @@ class Pricing_Controller extends Rest_Controller {
 
 
 	/**
-	 * Get the query params for collections.
+	 * Validate the items parameter.
 	 *
-	 * @return array
+	 * GET requests send items as a JSON-encoded query string, so we
+	 * decode it before running standard schema validation.
+	 * WordPress runs validate BEFORE sanitize, so decoding must happen here.
+	 *
+	 * @param mixed            $value   Raw parameter value.
+	 * @param \WP_REST_Request $request Full request object.
+	 * @param string           $param   Parameter name.
+	 *
+	 * @return true|\WP_Error True on success, WP_Error on failure.
 	 */
+	public function validate_items_param( $value, $request, string $param ) {
+		if ( is_string( $value ) ) {
+			$value = json_decode( $value, true );
+			if ( ! is_array( $value ) ) {
+				return new \WP_Error(
+					'rest_invalid_type',
+					__( 'The items parameter must be a valid JSON array.', 'bigcommerce' ),
+					[ 'param' => $param ]
+				);
+			}
+		}
+
+		// Set the decoded value so schema validation sees an array.
+		$request->set_param( $param, $value );
+
+		return rest_validate_request_arg( $value, $request, $param );
+	}
+
+	/**
+	 * Sanitize the items parameter.
+	 *
+	 * Decodes a JSON string (GET query param) into a PHP array.
+	 *
+	 * @param mixed $items Raw items parameter value.
+	 *
+	 * @return array Decoded items array.
+	 */
+	public function sanitize_items_param( $items ): array {
+		if ( is_string( $items ) ) {
+			$decoded = json_decode( $items, true );
+
+			return is_array( $decoded ) ? $decoded : [];
+		}
+
+		return is_array( $items ) ? $items : [];
+	}
+
 	public function get_collection_params() {
 		return [
 			'context' => $this->get_context_param(),
 			'items'   => [
 				'description'       => __( 'The option values for the product to add to the cart', 'bigcommerce' ),
-				'validate_callback' => 'rest_validate_request_arg',
+				'sanitize_callback' => [ $this, 'sanitize_items_param' ],
+				'validate_callback' => [ $this, 'validate_items_param' ],
 				'required'          => true,
 				'type'              => 'array',
 				'items'             => [

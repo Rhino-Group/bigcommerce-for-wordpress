@@ -5,6 +5,7 @@ namespace BigCommerce\Import\Processors;
 
 use BigCommerce\Api\v3\ApiException;
 use BigCommerce\Import\Runner\Status;
+use BigCommerce\Logging\Error_Log;
 use BigCommerce\Taxonomies\Product_Category\Product_Category;
 
 class Category_Purge extends Term_Purge {
@@ -23,11 +24,15 @@ class Category_Purge extends Term_Purge {
 	}
 
 	protected function get_remote_term_ids( array $ids ) {
+		do_action( 'bigcommerce/import/log', \BigCommerce\Logging\Error_Log::NOTICE, __( 'Ids: ' . print_r($ids,true), 'bigcommerce' ),[] );
+
 		if ( empty( $ids ) ) {
 			return [];
 		}
 
 		$msf_enabled = Store_Settings::is_msf_on();
+		do_action( 'bigcommerce/import/log', \BigCommerce\Logging\Error_Log::NOTICE, __( 'MSF Enabled: ' . $msf_enabled, 'bigcommerce' ),[] );
+
 		if ( $msf_enabled ) {
 			$response = $this->get_msf_categories( $this->catalog_api, [
 				'category_id:in' => $ids,
@@ -42,6 +47,8 @@ class Category_Purge extends Term_Purge {
 				'include_fields' => 'id',
 			] );
 		}
+
+		do_action( 'bigcommerce/import/log', \BigCommerce\Logging\Error_Log::NOTICE, __( 'Response: ' . print_r($response,true), 'bigcommerce' ),[] );
 
 		if ( empty( $response ) ) {
 			return [];

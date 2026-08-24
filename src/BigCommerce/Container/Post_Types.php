@@ -231,6 +231,7 @@ class Post_Types extends Provider {
 		$this->channel_sync( $container );
 		$this->product_slugs( $container );
 		$this->product_seo( $container );
+        $this->product_price( $container );
 	}
 
 	private function queue( Container $container ) {
@@ -375,4 +376,27 @@ class Post_Types extends Provider {
 			return $container[ self::PRODUCT_SEO ]->print_meta_description();
 		} ), 0, 0 );
 	}
+
+    /**
+     * Method for registering price-altering hooks for products
+     *
+     * @param Container $container
+     * @return void
+     */
+    private function product_price( Container $container ) {
+
+            add_filter( 'bigcommerce/template/wrapper/attributes', function ( $attributes, $template ) {
+
+                // If real-time pricing is disabled and the template name is product-price, remove the html
+                // attribute that triggers the API request to be fired.
+                if ( get_option( \BigCommerce\Settings\Sections\Currency::DISABLE_REALTIME_PRICING, false )
+                    && 'components/products/product-price.php' === $template ) {
+
+                    unset( $attributes['data-js'] );
+                }
+
+                return $attributes;
+            }, 15, 2 );
+
+    }
 }

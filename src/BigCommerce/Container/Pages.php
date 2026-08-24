@@ -117,13 +117,6 @@ class Pages extends Provider {
 			return new Wishlist_Page();
 		};
 
-		add_action( 'admin_init', $this->create_callback( 'create_pages', function () use ( $container ) {
-			foreach ( $container[ self::REQUIRED_PAGES ] as $page ) {
-				/** @var Required_Page $page */
-				$page->ensure_page_exists();
-			}
-		} ), 10, 0 );
-
 		$clear_options = $this->create_callback( 'clear_options', function ( $post_id ) use ( $container ) {
 			foreach ( $container[ self::REQUIRED_PAGES ] as $page ) {
 				/** @var Required_Page $page */
@@ -149,8 +142,17 @@ class Pages extends Provider {
 
 		add_action( 'the_content', $this->create_callback( 'page_content', function ( $content ) use ( $container ) {
 			if ( is_page() && in_the_loop() && is_main_query() ) {
+
+                $enable_shortcode_injection_cart = get_option( \BigCommerce\Settings\Sections\Cart::OPTION_ENABLE_CONTENT_INJECTION_CART, true );
+
 				foreach ( $container[ self::REQUIRED_PAGES ] as $page ) {
 					/** @var Required_Page $page */
+
+                    /* If shortcode injection is disabled, skip content filtering. Currently only implemented for Cart/Checkout */
+                    if ( ! $enable_shortcode_injection_cart &&
+                        ( $page->get_option_name() == Cart_Page::NAME || $page->get_option_name() == Checkout_Page::NAME ) ) {
+                        continue;
+                    }
 					$content = $page->filter_content( get_the_ID(), $content );
 				}
 			}

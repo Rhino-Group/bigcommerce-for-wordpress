@@ -1,29 +1,102 @@
 # Changelog
+## [6.1.4] - 2026-08-24
 
-## [5.1.2]
+### Fix
+- Fixed Absolute path values to old plugin name making some graphql requests not work.
+
+## [6.1.3] - 2026-04-17
+
+### Added
+- Build script `package-plugin.ps1` for creating distributable ZIP packages.
+
+## [6.1.2] - 2026-04-17
+
+### Changed
+- Pricing API: Converted frontend requests from POST to GET for native CDN URL-based caching.
+- Pricing API: Added `sanitize_items_param()` and `validate_items_param()` to handle JSON-encoded query string for GET requests.
+
+## [6.1.1] - 2026-04-17
+
+### Added
+- Pricing API: Added `X-BC-Pricing-Key` cache differentiation header (request and response) for Imperva CDN caching.
+- Pricing API: Implemented djb2 hash algorithm in both PHP and JS for deterministic cache key generation based on product IDs, options, and values.
+
+## [6.1.0] - 2026-02-16
 
 ### Fixed
-- Updated auth screen messaging to comply with OWASP guidelines.
+- Webhook cron scheduling now uses positional arguments to avoid PHP named-parameter fatals.
+- Product cleanup cron scheduling now uses positional arguments for PHP 8+ compatibility.
 
-## [5.1.1]
+## [5.0.7.21]
+- Dev - Pricing: Add event trigger to pricing updates.
+- Dev - Add filter to pricing API results formatting.
+## [5.0.7.20]
+- Fix - Make bi-directional setting never grab from listing data.
+## [5.0.7.19]
+- Fix - Correct issue with the name of a webhook and a php error when running it.
+## [5.0.7.18]
+- Dev - Add setting to control on-the-fly injection of BigCommerce shortcodes into required Cart and Checkout pages.
+## [5.0.7.17]
+- Dev - Revise to use a product delete behavior selection instead of a boolean. Consolidated removal logic.
+- Dev - Add setting for disabling bi-directional sync of product data, primarily post_status changes. 
+- Fix - Correct issue where existing post check cannot find matching products.
+## [5.0.7.16]
+- Fix - During Product Sync, remove WordPress attachments that no longer exist in BigCommerce.
+## [5.0.7.15]
+- Fix - Stores incorrectly marked as MSF because of a bug in BC, clearing out categories.
+## [5.0.7.14]
+- Enhancement - Disable Flushing of the user groups cache since none of our sites use it and it locks up the cron.
+## [5.0.7.13]
+- Fix - Webhooks subscribing to the wrong channel events.
+## [5.0.7.12]
+- Enhancement - Remove the ability to auto add products to channel due to flawed logic that cause products to get disabled inadvertently. 
+## [5.0.7.11]
+- `Enhancement - Added in more cron timeframes for running the product import process.`
+## [5.0.7.10]
+- Fix - Fixed an issue where the Page creation process was running on every page of the admin, messing up the cart pages.
 
-### Changed
-- Updated JS dependencies
-- Added CLI commands to the README
-- Update plugin readme `tested up` version
+## [5.0.7.9]
+- Enhancement - Extension of 5.0.7.8: Disable nonce check in cart endpoints based on Customizer setting.
+
+## [5.0.7.9]
+- Enhancement - Extension of 5.0.7.8: Disable nonce check in cart endpoints based on Customizer setting.
+
+## [5.0.7.8]
+- Enhancement - Allow disabling of pricing nonce field via Customizer to prevent errors on sites using full-page caching.
+
+## [5.0.7.7]
+
+### Added
+- Tweak - Added additional logging Product/Term Updates
+
+## [5.0.7.6]
+
+### Added
+ - Feature - Added setting + hook to disable the REST API requests for real-time product price refreshes.
+## [5.0.7.5]
+
+### Added
+- Feature - Added Settings to force refresh products and categories. When checked all categories and products will get updated without having to change them.
+
+## [5.0.7.4]
 
 ### Fixed
-- Fix wc_get_page_id return type
+- Fix - Set Image Delete on Import to 0 by default.
 
-## [5.1.0]
+## [5.0.7.3]
+
+### Added
+- Feature Added the ability to reimport images from scratch when switching from Import Image Url to Full Image Import.
+
+## [5.0.7.2]
 
 ### Changed
-- Sync all categories for MSF stores via API
+- Fix Moved sale price check above the range price check in order to display sale price on products that have a price range.
 
-## [5.0.8]
+## [5.0.7.1]
 
-### Changed
-- Update plugin readme `tested up` version
+### Added
+- Added PUC Support
 
 ## [5.0.7]
 
@@ -222,7 +295,7 @@
 ### Added
 - Added automatic API scope check during plugin installation. If provided API credentials do not meet the required [criteria](https://developer.bigcommerce.com/bigcommerce-for-wordpress/ZG9jOjIyMDYzNQ-multisite), the plugin installation will be aborted and an error message will be shown
 - Added ability to control customer's group's cache expiration time as well as ability to purge customer and products cache. In order to control or purge the cache go to Bigcommerce -> Settings -> Diagnostics. 
-  - Use the 'Flush Users Cache' button will purge customers' group cache and retrieve fresh data from Bigcommerce API. 
+  - Use the 'Flush Users Cache' button will purge customers' group cache and retrieve fresh data from bigcommerce API. 
   - Use the 'User Cache Expiration' option field to set the time for how long the group cache should be stored. 
   - Use the 'Flush Products Cache' button in order to invalidate products cache 
   - Please note: if webhooks are enabled the cache will be invalidated automatically
@@ -320,7 +393,7 @@
 
 ### Changed
 
-- In order to add more transparency in plugin code and updating the '[Plugin Code Reference](https://bc-wordpress-reference.vercel.app/)' site  PHPDoc blocks were updated. Added missing descriptions for classes/methods  and explanation comments in methods body. Please check the list of affected items below
+- In order to add more transparency in plugin code and updating the '[Plugin Code Reference](https://bigcommerce.moderntribe.qa/)' site  PHPDoc blocks were updated. Added missing descriptions for classes/methods  and explanation comments in methods body. Please check the list of affected items below
   - src/BigCommerce/Accounts/Channel_Settings.php
   - src/BigCommerce/Accounts/Countries.php
   - src/BigCommerce/Accounts/Customer_Group.php
@@ -1418,10 +1491,6 @@
 - Method signature for the `\BigCommerce\Import\Importers\Products\Product_Saver`
   constructor has changed. It now expects a \WP_Term representing the channel
   the product belongs to.
-- The order of operations in `\BigCommerce\Import\Importers\Products\Product_Saver`
-  has changed to assign terms to a product before setting its post data
-  or post meta. This is to support multiple products with the same slug
-  but in different channels.
 - Method signature for the `\BigCommerce\Import\Importers\Products\Product_Strategy_Factory`
   constructor has changed. It now expects a \WP_Term representing the channel
   the product belongs to.
@@ -1648,7 +1717,7 @@
   It is not, in fact, required.
 
 ### Changed
-- Changed the polling logic for the product import to prevent running multiple
+- The polling logic for the product import to prevent running multiple
   requests at the same time from a single browser window.
 - The Product Category dropdown on the Products archive will now show hierarchical
   terms nested under their parents.
@@ -1895,7 +1964,7 @@
   the CLI import completes.
 
 ### Removed
-- The class `BigCommerce\Customizer\Sections\Catalog` is gone. Its constants
+- Removed the class `BigCommerce\Customizer\Sections\Catalog` is gone. Its constants
   have moved to `BigCommerce\Customizer\Sections\Product_Archive`.
 
 ## [0.10.0] - 2018-08-03
@@ -1910,9 +1979,6 @@
 - Display option swatches with images or multiple colors
 - Link from WordPress admin to BigCommerce admin to manage product reviews
 - Option to disable reviews on a product, tied to WordPress's comment toggle
-
-### Changed
-- Product gallery thumbnail images will wrap after four thumbnails
 
 ### Fixed
 - Render inline content for newly-created product blocks
@@ -1938,114 +2004,3 @@
 - Manually reset the global `$post`, because `wp_reset_postdata()` does not,
   in fact, reset postdata, so far as Gutenberg 3.2.0 is concerned.
 
-
-[5.1.2]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/5.1.1...5.1.2
-[5.1.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/5.1.0...5.1.1
-[5.1.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/5.0.8...5.1.0
-[5.0.8]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/5.0.7...5.0.8
-[5.0.7]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/5.0.6...5.0.7
-[5.0.6]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/5.0.5...5.0.6
-[5.0.5]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/5.0.4...5.0.5
-[5.0.4]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/5.0.3...5.0.4
-[5.0.3]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/5.0.2...5.0.3
-[5.0.2]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/5.0.1...5.0.2
-[5.0.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/5.0.0...5.0.1
-[5.0.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.37.0...5.0.0
-[4.37.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.36.0...4.37.0
-[4.36.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.35.0...4.36.0
-[4.35.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.34.0...4.35.0
-[4.34.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.33.0...4.34.0
-[4.33.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.32.0...4.33.0
-[4.32.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.31.0...4.32.0
-[4.31.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.30.0...4.31.0
-[4.30.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.29.0...4.30.0
-[4.29.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.28.0...4.29.0
-[4.28.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.27.1...4.28.0
-[4.27.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.27.0...4.27.1
-[4.27.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.26.1...4.27.0
-[4.26.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.26.0...4.26.1
-[4.26.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.25.0...4.26.0
-[4.25.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.24.0...4.25.0
-[4.24.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.23.0...4.24.0
-[4.23.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.22.0...4.23.0
-[4.22.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.21.1...4.22.0
-[4.21.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.20.1...4.21.0
-[4.20.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.20.0...4.20.1
-[4.20.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.19.1...4.20.0
-[4.19.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.19.0...4.19.1
-[4.19.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.18.0...4.19.0
-[4.18.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.17.1...4.18.0
-[4.17.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.17.0...4.17.1
-[4.17.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.16.0...4.17.0
-[4.16.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.15.1...4.16.0
-[4.15.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.15.0...4.15.1
-[4.15.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.14.1...4.15.0
-[4.14.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.14.0...4.14.1
-[4.14.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.13.0...4.14.0
-[4.13.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.12.0...4.13.0
-[4.12.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.11.0...4.12.0
-[4.11.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.10.0...4.11.0
-[4.10.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.9.0...4.10.0
-[4.9.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.8.0...4.9.0
-[4.8.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.7.0...4.8.0
-[4.7.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.6.0...4.7.0
-[4.6.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.5.1...4.6.0
-[4.5.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.5.0...4.5.1
-[4.5.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.4.0...4.5.0
-[4.4.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.3.1...4.4.0
-[4.3.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.3.0...4.3.1
-[4.3.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.2.0...4.3.0
-[4.2.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.1.0...4.2.0
-[4.1.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/4.0.0...4.1.0
-[4.0.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.22.0...4.0.0
-[3.22.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.21.0...3.22.0
-[3.21.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.20.0...3.21.0
-[3.20.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.19.0...3.20.0
-[3.19.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.18.1...3.19.0
-[3.18.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.18.0...3.18.1
-[3.18.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.17.0...3.18.0
-[3.17.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.16.0...3.17.0
-[3.16.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.15.0...3.16.0
-[3.15.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.14.0...3.15.0
-[3.14.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.13.0...3.14.0
-[3.13.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.12.0...3.13.0
-[3.12.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.11.0...3.12.0
-[3.11.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.10.0...3.11.0
-[3.10.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.9.0...3.10.0
-[3.9.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.8.1...3.9.0
-[3.8.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.8.0...3.8.1
-[3.8.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.7.0...3.8.0
-[3.7.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.6.0...3.7.0
-[3.6.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.5.0...3.6.0
-[3.5.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.4.1...3.5.0
-[3.4.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.4.0...3.4.1
-[3.4.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.3.0...3.4.0
-[3.3.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.2.0...3.3.0
-[3.2.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.1.0...3.2.0
-[3.1.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.0.2...3.1.0
-[3.0.2]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.0.1...3.0.2
-[3.0.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/3.0.0...3.0.1
-[3.0.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/2.2.1...3.0.0
-[2.2.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/2.2.0...2.2.1
-[2.2.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/2.1.0...2.2.0
-[2.1.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/2.0.1...2.1.0
-[2.0.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/2.0.0...2.0.1
-[2.0.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/1.6.0...2.0.0
-[1.6.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/1.5.0...1.6.0
-[1.5.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/1.4.2...1.5.0
-[1.4.2]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/1.4.1...1.4.2
-[1.4.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/1.4.0...1.4.1
-[1.4.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/1.3.0...1.4.0
-[1.3.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/1.2.0...1.3.0
-[1.2.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/1.1.0...1.2.0
-[1.1.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/1.0.2...1.1.0
-[1.0.2]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/1.0.1...1.0.2
-[1.0.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/0.15.0...1.0.1
-[0.15.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/0.14.0...0.15.0
-[0.14.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/0.13.0...0.14.0
-[0.13.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/0.12.0...0.13.0
-[0.12.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/0.11.1...0.12.0
-[0.11.1]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/0.11.0...0.11.1
-[0.11.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/0.10.0...0.11.0
-[0.10.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/0.9.0...0.10.0
-[0.9.0]: https://github.com/bigcommerce/bigcommerce-for-wordpress/compare/0.8.0...0.9.0

@@ -103,7 +103,7 @@ class Listing_Fetcher implements Import_Processor {
 		}
 
 		foreach ( $response->getData() as $listing ) {
-			if ( $listing->getState() === 'deleted' ) {
+			if ( $listing->getState() === 'deleted' || $listing->getState() === 'disabled' ) {
 				continue;
 			}
 			$data = ObjectSerializer::sanitizeForSerialization( $listing );

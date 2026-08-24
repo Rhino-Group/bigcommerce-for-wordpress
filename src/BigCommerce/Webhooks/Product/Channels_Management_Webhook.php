@@ -2,7 +2,7 @@
 /**
  * Product_Create_Webhook class
  *
- * @package BigCommmerce
+ * @package BigCommerce
  */
 
 namespace BigCommerce\Webhooks\Product;
@@ -17,7 +17,7 @@ use BigCommerce\Webhooks\Webhook;
  */
 class Channels_Management_Webhook extends Webhook {
 
-	const SCOPE                 = 'store/channel/*';
+	const SCOPE                 = 'store/channel/updated';
 	const CHANNEL_UPDATED_SCOPE = 'store/channel/updated';
 	const CHANNEL_UPDATED_HOOK  = 'bigcommerce/webhooks/channel_updated';
 	const NAME                  = 'bigcommerce_channels';
@@ -76,6 +76,24 @@ class Channels_Management_Webhook extends Webhook {
 			return;
 		}
 
+		$is_product_scope = ( stripos( $scope, 'category/product' ) !== false ) || ( stripos( $scope, '/product/' ) !== false );
+		if ( $is_product_scope ) {
+			$product_id = isset( $request['data']['product_id'] ) && is_numeric( $request['data']['product_id'] )
+				? (int) $request['data']['product_id']
+				: 0;
+
+			if ( $product_id <= 0 ) {
+				do_action( 'bigcommerce/log', Error_Log::INFO, __( 'Webhook request missing product_id', 'bigcommerce' ), [
+					'channel_id' => (int) $channel_id,
+					'product_id' => $product_id,
+					'scope'      => $request['scope'],
+					'action'     => $action,
+				], 'webhooks' );
+
+				return;
+			}
+		}
+
 		$this->handle_channels_webhooks_filters( $request, $scope, ( int ) $channel_id, $action );
 	}
 
@@ -87,12 +105,12 @@ class Channels_Management_Webhook extends Webhook {
 		}
 
 		if ( stripos( 'category/product', $scope ) !== false ) {
-			do_action( sprintf( '%s_%s', self::PRODUCT_CATEGORY_CHANNEL_HOOK, $action ), intval( $request['data']['product_id'] ), $channel_id );
+			do_action( sprintf( '%s_%s', self::PRODUCT_CATEGORY_CHANNEL_HOOK, $action ), intval( $request['data']['product_id'] ), $channel_id, $scope, $action );
 
 			return;
 		}
 
-		do_action( sprintf( '%s_%s', self::PRODUCT_CHANNEL_HOOK, $action ), intval( $request['data']['product_id'] ), $channel_id );
+		do_action( sprintf( '%s_%s', self::PRODUCT_CHANNEL_HOOK, $action ), intval( $request['data']['product_id'] ), $channel_id, $scope, $action );
 	}
 
 }

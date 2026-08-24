@@ -188,14 +188,34 @@ class GraphQL_Processor extends BaseGQL {
 	 * @throws \Exception
 	 */
 	public function get_graph_ql_query_from_file( $file = '' ): string {
-		$plugin_path = WP_PLUGIN_DIR . '/bigcommerce/src/BigCommerce/Import/Processors/GQL/%s.graphql';
-		$path = apply_filters( 'bigcommerce/gql/query_file_path', sprintf( $plugin_path, $file ), $file );
+		$plugin_template = dirname( __DIR__, 3 ) . '/src/BigCommerce/Import/Processors/GQL/%s.graphql';
+		$legacy_template = WP_PLUGIN_DIR . '/bigcommerce/src/BigCommerce/Import/Processors/GQL/%s.graphql';
 
-		if ( ! file_exists( $path ) ) {
-			throw new \Exception( __( 'Could not retrieve graph QL query: query file is missing. ' . $plugin_path, 422 ) );
+		$checked_paths = [];
+		$path          = apply_filters( 'bigcommerce/gql/query_file_path', sprintf( $plugin_template, $file ), $file );
+
+		if ( ! empty( $path ) ) {
+			$checked_paths[] = $path;
+			if ( file_exists( $path ) ) {
+				return file_get_contents( $path );
+			}
 		}
 
-		return file_get_contents( $path );
+		$legacy_path = sprintf( $legacy_template, $file );
+		if ( ! in_array( $legacy_path, $checked_paths, true ) ) {
+			$checked_paths[] = $legacy_path;
+		}
+
+		if ( file_exists( $legacy_path ) ) {
+			return file_get_contents( $legacy_path );
+		}
+
+		$message = sprintf(
+			'Could not retrieve graph QL query: query file is missing. Checked paths: %s',
+			implode( ', ', $checked_paths )
+		);
+
+		throw new \Exception( $message, 422 );
 	}
 
 	/**

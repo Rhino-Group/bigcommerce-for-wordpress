@@ -19,66 +19,74 @@ use BigCommerce\Taxonomies\Channel\Connections;
  *
  * Import new single product from Bigcommerce
  */
-class Product_Creator
+class Product_Creator extends Channels_Manager
 {
-    /** @var CatalogApi */
-    private $catalog;
+	public function __construct( CatalogApi $catalog, ChannelsApi $channels ) {
+		parent::__construct( $catalog, $channels );
+	}
 
-    /** @var ChannelsApi */
-    private $channels;
+	/**
+	 * Handle product creation logic
+	 *
+	 * @param int $product_id
+	 */
+	public function create( int $product_id ): void {
+		$connections = new Connections();
+		$channels    = $connections->active();
 
-    public function __construct( CatalogApi $catalog, ChannelsApi $channels ) {
-        $this->catalog  = $catalog;
-        $this->channels = $channels;
-    }
-
-    /**
-     * Handle product creation logic
-     *
-     * @param $product_id
-     */
-    public function create( $product_id ) {
-        $connections = new Connections();
-        $channels    = $connections->active();
-
-        if ( empty( $channels ) ) {
+		if ( empty( $channels ) ) {
 			do_action( 'bigcommerce/import/error', __( 'No channels connected. Product import canceled.', 'bigcommerce' ) );
 			do_action( 'bigcommerce/log', Error_Log::ERROR, __( 'Webhook product creation failed. No channels connected', 'bigcommerce' ), [], 'webhooks' );
-            return;
-        }
+			return;
+		}
 
-        try {
-            /*
+		$scope           = Product_Create_Webhook::SCOPE;
+		$action          = 'created';
+		$channel_sample  = reset( $channels );
+		$channel_term_id = ! empty( $channel_sample ) ? (int) $channel_sample->term_id : 0;
+		$channel_id      = $channel_term_id > 0 ? (int) get_term_meta( $channel_term_id, Channel::CHANNEL_ID, true ) : 0;
+
+		if ( ! $this->acquire_product_import_lock( $product_id, $channel_id, $channel_term_id, $scope, $action ) ) {
+			return;
+		}
+
+		/*
+		 * Keep the filter callback scoped so we can remove it reliably.
+		 */
+		$empty = function () {
+			return false;
+		};
+
+		try {
+			/*
 			 * Listings should not be updated when saving a product on import.
 			 *
 			 * Create our own callback instead of __return_false() so that
 			 * we don't inadvertently unhook someone else's filter later
 			 */
-            $empty = function () {
-                return false;
-            };
-            add_filter( 'bigcommerce/channel/listing/should_update', $empty, 10, 0 );
-            add_filter( 'bigcommerce/channel/listing/should_delete', $empty, 10, 0 );
+			add_filter( 'bigcommerce/channel/listing/should_update', $empty, 10, 0 );
+			add_filter( 'bigcommerce/channel/listing/should_delete', $empty, 10, 0 );
 
-            $product = $this->catalog->getProductById( $product_id, [
-                'include' => [ 'variants', 'custom_fields', 'images', 'videos', 'bulk_pricing_rules', 'options', 'modifiers' ],
-            ] )->getData();
+			$product = $this->catalog_api->getProductById( $product_id, [
+				'include' => [ 'variants', 'custom_fields', 'images', 'videos', 'bulk_pricing_rules', 'options', 'modifiers' ],
+			] )->getData();
 
-            foreach ( $channels as $channel ) {
-               $this->handle_product_creation( $product, $channel );
-            }
-        } catch ( ApiException $e ) {
-            do_action( 'bigcommerce/import/error', $e->getMessage(), [
-                'response' => $e->getResponseBody(),
-                'headers'  => $e->getResponseHeaders(),
-            ] );
-            do_action( 'bigcommerce/log', Error_Log::DEBUG, $e->getTraceAsString(), [], 'webhooks' );
-        } finally {
-            // unhook the filters we added at the start
-            remove_filter( 'bigcommerce/channel/listing/should_update', $empty, 10 );
-            remove_filter( 'bigcommerce/channel/listing/should_delete', $empty, 10 );
-        }
-    }
+			foreach ( $channels as $channel ) {
+				$this->handle_product_creation( $product, $channel );
+			}
+		} catch ( ApiException $e ) {
+			do_action( 'bigcommerce/import/error', $e->getMessage(), [
+				'response' => $e->getResponseBody(),
+				'headers'  => $e->getResponseHeaders(),
+			] );
+			do_action( 'bigcommerce/log', Error_Log::DEBUG, $e->getTraceAsString(), [], 'webhooks' );
+		} finally {
+			// unhook the filters we added at the start
+			remove_filter( 'bigcommerce/channel/listing/should_update', $empty, 10 );
+			remove_filter( 'bigcommerce/channel/listing/should_delete', $empty, 10 );
+			$this->release_product_import_lock( $product_id, $channel_id, $channel_term_id, $scope, $action );
+		}
+	}
 
     /**
      * Check if channel exists, adds listings to product and start product import
@@ -120,7 +128,7 @@ class Product_Creator
      * @param $channel
      */
     private function do_import( $product, $listing, $channel ) {
-        $importer = new Product_Importer( $product, $listing, $this->catalog, $channel );
+        $importer = new Product_Importer( $product, $listing, $this->catalog_api, $channel );
         $importer->import();
     }
 
@@ -151,6 +159,6 @@ class Product_Creator
             ] )
         ];
 
-        return $this->channels->createChannelListings( $channel_id, $listing_requests );
+        return $this->channels_api->createChannelListings( $channel_id, $listing_requests );
     }
 }

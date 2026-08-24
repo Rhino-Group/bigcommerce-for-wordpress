@@ -114,15 +114,7 @@ class Cleanup implements Import_Processor {
 	 * Remove customers group transient cache after sync in order to retrieve fresh groups data
 	 */
 	public function clean_customer_group_transients(): void {
-		$users_ids = get_users( [ 'fields' => 'ID' ] );
-		foreach ( $users_ids as $users_id ) {
-			$customer_id = get_user_option( Customer::CUSTOMER_ID_META, $users_id );
-			$customer    = new Customer( $users_id );
-			delete_transient( sprintf( 'bccustgroupinfo%d', $customer->get_group_id() ) );
-			$transient_key = sprintf( 'bccustomergroup%d', $customer_id );
-			delete_transient( $transient_key );
-			delete_transient( sprintf( 'bccustomervisibleterms%d', $users_id ) );
-		}
+		return;
 	}
 
 	/**
@@ -165,9 +157,8 @@ class Cleanup implements Import_Processor {
 		}
 
 		if ( ! $partially ) {
-			wp_schedule_single_event( time(), Cleanup::CLEAN_PRODUCTS_TRANSIENT, [
-					'offset' => $offset + self::CLEAN_POSTS_PER_PAGE,
-			] );
+			$next_offset = $offset + self::CLEAN_POSTS_PER_PAGE;
+			wp_schedule_single_event( time(), Cleanup::CLEAN_PRODUCTS_TRANSIENT, [ $next_offset ] );
 		}
 	}
 

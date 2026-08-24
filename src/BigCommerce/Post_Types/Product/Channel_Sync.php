@@ -8,6 +8,7 @@ use BigCommerce\Api\v3\ApiException;
 use BigCommerce\Api\v3\Model\Listing;
 use BigCommerce\Api\v3\Model\UpdateListingRequest;
 use BigCommerce\Settings\Sections\Channels;
+use BigCommerce\Settings\Sections\Import;
 
 /**
  * Class Channel_Sync
@@ -40,6 +41,8 @@ class Channel_Sync {
 			return;
 		}
 
+        $allow_update = get_option( Import::ENABLE_PRODUCT_BIDIR_SYNC, false );
+
 		/**
 		 * Filter whether updates to the post should be pushed up to the
 		 * BigCommerce channel listing.
@@ -47,7 +50,7 @@ class Channel_Sync {
 		 * @param bool $update  Whether the update should be pushed
 		 * @param int  $post_id The ID of the post being updated
 		 */
-		if ( ! apply_filters( 'bigcommerce/channel/listing/should_update', true, $post_id ) ) {
+		if ( ! apply_filters( 'bigcommerce/channel/listing/should_update', $allow_update, $post_id ) ) {
 			return;
 		}
 
@@ -189,6 +192,8 @@ class Channel_Sync {
 			return;
 		}
 
+        $allow_update = get_option( Import::ENABLE_PRODUCT_BIDIR_SYNC, false );
+
 		/**
 		 * Filter whether deleting the post should be pushed up to the
 		 * BigCommerce channel listing.
@@ -196,7 +201,7 @@ class Channel_Sync {
 		 * @param bool $update  Whether the update should be pushed
 		 * @param int  $post_id The ID of the post being updated
 		 */
-		if ( ! apply_filters( 'bigcommerce/channel/listing/should_delete', true, $post_id ) ) {
+		if ( ! apply_filters( 'bigcommerce/channel/listing/should_delete', $allow_update, $post_id ) ) {
 			return;
 		}
 

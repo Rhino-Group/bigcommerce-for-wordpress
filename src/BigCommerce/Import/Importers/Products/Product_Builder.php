@@ -16,6 +16,7 @@ use BigCommerce\Import\Import_Strategy;
 use BigCommerce\Import\Mappers\Brand_Mapper;
 use BigCommerce\Import\Mappers\Product_Category_Mapper;
 use BigCommerce\Post_Types\Product\Product;
+use BigCommerce\Settings\Sections\Import;
 use BigCommerce\Taxonomies\Availability\Availability;
 use BigCommerce\Taxonomies\Brand\Brand;
 use BigCommerce\Taxonomies\Channel\Channel;
@@ -43,6 +44,8 @@ class Product_Builder {
 	 * @var \WP_Term
 	 */
 	private $channel_term;
+
+	const ENABLE_IMAGE_OVERWRITE_IMPORT      = 'bigcommerce_import_enable_image_overwrite_import';
 
 	/**
 	 * Product_Builder constructor.
@@ -75,7 +78,12 @@ class Product_Builder {
 	}
 
 	private function get_post_title() {
-		$title =  $this->listing->getName() ?: $this->product->getName();
+		$allow_update = get_option( Import::ENABLE_PRODUCT_BIDIR_SYNC, false );
+		if($allow_update === '1'){
+			$title =  $this->listing->getName() ?: $this->product->getName();
+		} else{
+			$title = $this->product->getName();
+		}
 
 		return $this->sanitize_title( $title );
 	}
@@ -85,7 +93,12 @@ class Product_Builder {
 	}
 
 	private function get_post_content() {
-		$content = $this->listing->getDescription() ?: $this->product->getDescription();
+		$allow_update = get_option( Import::ENABLE_PRODUCT_BIDIR_SYNC, false );
+		if($allow_update === '1'){
+			$content = $this->listing->getDescription() ?: $this->product->getDescription();
+		} else{
+			$content = $this->product->getDescription();
+		}
 
 		return $this->sanitize_content( $content );
 	}
@@ -252,6 +265,8 @@ class Product_Builder {
 			return $response;
 		}
 
+		$image_overwrite = get_option(Product_Builder::ENABLE_IMAGE_OVERWRITE_IMPORT);
+
 		$images = $this->product[ 'images' ];
 
 		usort( $images, function ( $a, $b ) {
@@ -261,6 +276,10 @@ class Product_Builder {
 
 			return ( $a[ 'sort_order' ] < $b[ 'sort_order' ] ) ? - 1 : 1;
 		} );
+
+        // Rhino: 02-13-2025 - Remove attachments that don't exist in BC
+        $this->delete_removed_images( $parent_id, $images );
+
 		foreach ( $images as $image ) {
 			/** @var ProductImage $image */
 
@@ -277,6 +296,13 @@ class Product_Builder {
 				'fields'         => 'ids',
 				'posts_per_page' => 1,
 			] );
+			if($image_overwrite === "1"){
+				foreach( $existing as $existing_id){
+					wp_delete_post($existing_id);
+				}
+				$existing = [];
+			}
+
 			if ( ! empty( $existing ) ) {
 				$post_id = reset( $existing );
 			} else {
@@ -313,6 +339,13 @@ class Product_Builder {
 					   AND m.meta_value=%s ORDER BY p.ID ASC LIMIT 1",
 					$image_url
 				) );
+				if($image_overwrite === "1"){
+					if ( ! empty( $existing ) ) {
+						wp_delete_post( $existing );
+						$existing = [];
+					}
+				}
+
 				if ( ! empty( $existing ) ) {
 					$post_id = (int) $existing;
 				} else {
@@ -549,4 +582,40 @@ class Product_Builder {
 		$listing_string = wp_json_encode( ObjectSerializer::sanitizeForSerialization( $listing ) );
 		return md5( $product_string . $listing_string );
 	}
+
+    /**
+     * Compares BigCommerce image list to attachments found in WordPress.
+     * Any attachments without a match in BigCommerce are removed from WordPress.
+     *
+     * @since 5.0.7.16
+     * @param int $parent_id
+     * @param array $images
+     * @return void
+     */
+    public function delete_removed_images(int $parent_id, array $images): void
+    {
+        $existing_attachments = get_posts([
+            'post_type' => 'attachment',
+            'post_parent' => $parent_id,
+            'posts_per_page' => 999,
+        ]);
+
+        foreach ( $existing_attachments as $attachment ) {
+
+            $bc_image_id = get_post_meta( $attachment->ID, 'bigcommerce_id', true );
+
+            if ( false == $bc_image_id || empty( $bc_image_id ) )
+                return;
+
+            // Is this attachment still on BC?
+            $match = array_filter( $images, function ($image) use ($bc_image_id) {
+                return $image['id'] == $bc_image_id;
+            });
+
+            // If it DOES NOT exist in BigCommerce, then remove it from WordPress
+            if ( empty( $match ) ) {
+                wp_delete_attachment( $attachment->ID, true );
+            }
+        }
+    }
 }

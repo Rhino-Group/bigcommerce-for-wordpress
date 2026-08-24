@@ -225,9 +225,9 @@ class Import extends Provider {
 			return new Processors\Product_Data_Fetcher( $container[ Api::FACTORY ]->catalog(), $container[ self::LARGE_BATCH_SIZE ] );
 		};
 
-		$container[ self::MARK ] = function ( Container $container ) {
-			return new Processors\Deleted_Product_Marker();
-		};
+        $container[ self::MARK ] = function ( Container $container ) {
+            return new Processors\Deleted_Product_Marker();
+        };
 
 		$container[ self::QUEUE ] = function ( Container $container ) {
 			return new Processors\Queue_Runner( $container[ Api::FACTORY ]->catalog(), $container[ self::BATCH_SIZE ], 5 );
@@ -241,9 +241,9 @@ class Import extends Provider {
 			return new Processors\Currencies( $container[ Api::FACTORY ]->currencies(), $container[ Api::FACTORY ]->currenciesV3(), new Connections() );
 		};
 
-		$container[ self::PRODUCT_CLEANUP ] = function ( Container $container ) {
-			return new Processors\ProductCleanup( $container[ self::LARGE_BATCH_SIZE ] );
-		};
+        $container[ self::PRODUCT_CLEANUP ] = function ( Container $container ) {
+            return new Processors\ProductCleanup( $container[ self::LARGE_BATCH_SIZE ] );
+        };
 
 		$container[ self::CLEANUP ] = function ( Container $container ) {
 			return new Processors\Cleanup( $container[ Api::CACHE_HANDLER ], $container[ self::LARGE_BATCH_SIZE ] );
@@ -309,12 +309,7 @@ class Import extends Provider {
 					$list[] = new Task_Definition( $this->create_callback( 'process_listings' . $suffix, function () use ( $container, $channel_term ) {
 						$container[ self::LISTINGS ]( $channel_term )->run();
 					} ), 30, Runner\Status::FETCHED_LISTINGS . $suffix, [ Runner\Status::FETCHING_LISTINGS . $suffix ], sprintf( __( 'Fetching existing listings from the BigCommerce API for channel %s', 'bigcommerce' ), esc_html( $channel_term->name ) ) );
-
-					$list[] = new Task_Definition( $this->create_callback( 'process_channel' . $suffix, function () use ( $container, $channel_term ) {
-						$container[ self::CHANNEL ]( $channel_term )->run();
-					} ), 40, Runner\Status::INITIALIZED_CHANNEL . $suffix, [ Runner\Status::INITIALIZING_CHANNEL . $suffix ], sprintf( __( 'Adding listings to channel %s', 'bigcommerce' ), esc_html( $channel_term->name ) ) );
 				}
-
 				$list[] = new Task_Definition( $this->create_callback( 'process_fetch', function () use ( $container ) {
 					$container[ self::PRODUCTS ]->run();
 				} ), 50, Runner\Status::FETCHED_PRODUCTS, [ Runner\Status::FETCHING_PRODUCTS ], __( 'Fetching product data from the BigCommerce API', 'bigcommerce' ) );

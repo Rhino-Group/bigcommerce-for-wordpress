@@ -1,6 +1,8 @@
 # BigCommerce for WordPress
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/bigcommerce/bigcommerce-for-wordpress)
 
+Version: 6.1.0
+
 ## Plugin Setup
 
 As with any WordPress plugin, upload the plugin ZIP file to the

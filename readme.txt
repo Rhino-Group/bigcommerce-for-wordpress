@@ -1,10 +1,10 @@
-=== BigCommerce For WordPress ===
-Contributors: bigcommerce, moderntribe, jbrinley, becomevocal, vincentlistrani, jbirthler, kdiplas, iliabaum, joshliston, nickioa, fernando22, mr_speer, geoffgraham, yuenvision, xwp, karenpwhite, mlkilderkin, ericbher, karmatosed, lukecarbis, tfanelli, jazzsequence, ipokrovkiy, johnolek, chanceaclark
+=== BigCommerce For WordPress (Suma) ===
+Contributors: bigcommerce, moderntribe, jbrinley, becomevocal, vincentlistrani, jbirthler, kdiplas, iliabaum, joshliston, nickioa, fernando22, mr_speer, geoffgraham, yuenvision, xwp, karenpwhite, mlkilderkin
 Tags: ecommerce, online store, sell online, storefront, retail, online shop, bigcommerce, big commerce, e-commerce, physical products, buy buttons, commerce, shopping cart, checkout, cart, shop, headless commerce, shipping, payments, fulfillment
 Requires at least: 5.2
-Tested up to: 6.7
-Stable tag: 5.1.2
-Requires PHP: 7.4.0
+Tested up to: 6.5.5
+Stable tag: 6.1.4
+Requires PHP: 8.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 

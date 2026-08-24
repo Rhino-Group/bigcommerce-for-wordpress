@@ -25,7 +25,13 @@ class Assets extends Provider {
 
 	public function register( Container $container ) {
 		$container[ self::PATH ]    = function ( Container $container ) {
-			return plugins_url( 'assets', $container[ 'plugin_file' ] );
+			$plugin_basename = plugin_basename( $container[ 'plugin_file' ] );
+			$plugin_dir      = trailingslashit( dirname( $plugin_basename ) );
+			if ( '.' === $plugin_dir ) {
+				$plugin_dir = '';
+			}
+
+			return plugins_url( $plugin_dir . 'assets' );
 		};
 		$container[ self::VERSION ] = function ( Container $container ) {
 			$version = Plugin::VERSION;
@@ -64,7 +70,7 @@ class Assets extends Provider {
 			$container[ self::ADMIN_SCRIPTS ]->enqueue_scripts();
 			$container[ self::ADMIN_STYLES ]->enqueue_styles();
 		} ), 9, 0 );
-		
+
 		add_action( 'admin_enqueue_scripts', $this->create_callback( 'admin_remove_google_sitekit_script_on_bc_admin_pages', function ( $hook ) {
 			if ( strpos( get_current_screen()->id, 'bigcommerce') !== false ) {
 				wp_dequeue_script( 'googlesitekit-base' );

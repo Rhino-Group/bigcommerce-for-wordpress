@@ -12,6 +12,7 @@ use BigCommerce\Import\Import_Strategy;
 use BigCommerce\Import\Importers\Products\Product_Creator;
 use BigCommerce\Import\Importers\Products\Product_Ignorer;
 use BigCommerce\Import\Importers\Products\Product_Updater;
+use BigCommerce\Logging\Error_Log;
 use BigCommerce\Post_Types\Product\Product;
 
 class Product_Strategy_Factory {
@@ -79,22 +80,15 @@ class Product_Strategy_Factory {
 					'value' => absint( $this->product->getId() ),
 				],
 			],
-			'tax_query'      => [
-				[
-					'taxonomy' => $this->channel_term->taxonomy,
-					'field'    => 'term_id',
-					'terms'    => [ (int) $this->channel_term->term_id ],
-					'operator' => 'IN',
-				],
-			],
 			'post_type'      => Product::NAME,
 			'posts_per_page' => 1,
 			'fields'         => 'ids',
-			'post_status'    => 'any',
+			'post_status'    => ['any', 'trash'],
 		];
 
 		$posts = get_posts( $args );
 		if ( empty( $posts ) ) {
+            do_action( 'bigcommerce/log', Error_Log::DEBUG, 'Product_Strategy_Factory: Matching post not found for BC ID: ' . $this->product->getId(), [] );
 			return 0;
 		}
 
@@ -121,6 +115,9 @@ class Product_Strategy_Factory {
 		 * @param Model\Listing $listing  The channel listing data from the API
 		 * @param string        $version  The version of the importer
 		 */
+		if ( get_option('bigcommerce_import_enable_product_force_refresh') === "1" ) {
+            $response = true;
+		}
 		return apply_filters( 'bigcommerce/import/strategy/needs_refresh', $response, $post_id, $this->product, $this->listing, $this->version );
 	}
 }

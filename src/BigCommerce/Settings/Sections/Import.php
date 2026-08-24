@@ -20,6 +20,11 @@ class Import extends Settings_Section {
 	const ENABLE_PRODUCTS_WEBHOOKS = 'bigcommerce_import_enable_webhooks';
 	const ENABLE_CUSTOMER_WEBHOOKS = 'bigcommerce_import_enable_customer_webhooks';
 	const ENABLE_IMAGE_IMPORT      = 'bigcommerce_import_enable_image_import';
+	const ENABLE_IMAGE_OVERWRITE_IMPORT      = 'bigcommerce_import_enable_image_overwrite_import';
+    const ENABLE_PRODUCT_BIDIR_SYNC     = 'bigcommerce_enable_product_bi-dir_sync';
+	const PRODUCT_DELETION_BEHAVIOR      = 'bigcommerce_import_product_deletion_behavior';
+	const ENABLE_PRODUCT_FORCE_REFRESH      = 'bigcommerce_import_enable_product_force_refresh';
+	const ENABLE_CATEGORY_FORCE_REFRESH      = 'bigcommerce_import_enable_category_force_refresh';
 	const MAX_CONCURRENT           = 'bigcommerce_import_max_concurrent';
 	const RUN_IN_PARALLEL          = 'bigcommerce_parallel_run';
 	const HEADLESS_FLAG            = 'bigcommerce_headless_flag';
@@ -27,6 +32,10 @@ class Import extends Settings_Section {
 	const FREQUENCY_FIVE    = 'five_minutes';
 	const FREQUENCY_THIRTY  = 'thirty_minutes';
 	const FREQUENCY_HOURLY  = 'hourly';
+	const FREQUENCY_BIHOURLY  = 'bihourly';
+	const FREQUENCY_FOURHOURS  = 'fourhours';
+	const FREQUENCY_EIGHTHOURS  = 'eighthours';
+	const FREQUENCY_TWELVEHOURS  = 'twelvehours';
 	const FREQUENCY_DAILY   = 'daily';
 	const FREQUENCY_WEEKLY  = 'weekly';
 	const FREQUENCY_MONTHLY = 'monthly';
@@ -169,6 +178,83 @@ class Import extends Settings_Section {
 				'label'  => __( 'Allow product images import', 'bigcommerce' ),
 			]
 		);
+		register_setting(
+			Settings_Screen::NAME,
+			self::PRODUCT_DELETION_BEHAVIOR
+		);
+
+		add_settings_field(
+			self::PRODUCT_DELETION_BEHAVIOR,
+			esc_html( __( 'Product Deletion Behavior', 'bigcommerce' ) ),
+			[ $this, 'render_product_deletion_select', ],
+			Settings_Screen::NAME,
+			self::NAME,
+			[
+				'label_for' => 'field-' . self::PRODUCT_DELETION_BEHAVIOR,
+			]
+		);
+
+        register_setting(
+            Settings_Screen::NAME,
+            self::ENABLE_PRODUCT_BIDIR_SYNC
+        );
+
+        add_settings_field(
+            self::ENABLE_PRODUCT_BIDIR_SYNC,
+            esc_html( __( 'Allow Bi-Directional Product Sync', 'bigcommerce' ) ),
+            [ $this, 'render_product_bidir_sync_checkbox', ],
+            Settings_Screen::NAME,
+            self::NAME,
+            [
+                'label_for' => 'field-' . self::ENABLE_PRODUCT_BIDIR_SYNC,
+            ]
+        );
+
+		register_setting(
+			Settings_Screen::NAME,
+			self::ENABLE_IMAGE_OVERWRITE_IMPORT
+		);
+
+		add_settings_field(
+			self::ENABLE_IMAGE_OVERWRITE_IMPORT,
+			esc_html( __( 'Delete and Recreate Images', 'bigcommerce' ) ),
+			[ $this, 'render_image_import_overwrite_checkbox', ],
+			Settings_Screen::NAME,
+			self::NAME,
+			[
+				'label_for' => 'field-' . self::ENABLE_IMAGE_OVERWRITE_IMPORT,
+			]
+		);
+		register_setting(
+			Settings_Screen::NAME,
+			self::ENABLE_PRODUCT_FORCE_REFRESH
+		);
+
+		add_settings_field(
+			self::ENABLE_PRODUCT_FORCE_REFRESH,
+			esc_html( __( 'Force Refresh Products', 'bigcommerce' ) ),
+			[ $this, 'render_enable_product_force_refresh_checkbox', ],
+			Settings_Screen::NAME,
+			self::NAME,
+			[
+				'label_for' => 'field-' . self::ENABLE_PRODUCT_FORCE_REFRESH,
+			]
+		);
+		register_setting(
+			Settings_Screen::NAME,
+			self::ENABLE_CATEGORY_FORCE_REFRESH
+		);
+
+		add_settings_field(
+			self::ENABLE_CATEGORY_FORCE_REFRESH,
+			esc_html( __( 'Force Refresh Categories', 'bigcommerce' ) ),
+			[ $this, 'render_enable_category_force_refresh_checkbox', ],
+			Settings_Screen::NAME,
+			self::NAME,
+			[
+				'label_for' => 'field-' . self::ENABLE_CATEGORY_FORCE_REFRESH,
+			]
+		);
 
 		register_setting( Settings_Screen::NAME, self::ENABLE_IMAGE_IMPORT );
 
@@ -268,6 +354,10 @@ class Import extends Settings_Section {
 			self::FREQUENCY_FIVE    => __( 'Five Minutes', 'bigcommerce' ),
 			self::FREQUENCY_THIRTY  => __( 'Thirty Minutes', 'bigcommerce' ),
 			self::FREQUENCY_HOURLY  => __( 'Hour', 'bigcommerce' ),
+			self::FREQUENCY_BIHOURLY  => __( '2 Hours', 'bigcommerce' ),
+			self::FREQUENCY_FOURHOURS  => __( '4 Hours', 'bigcommerce' ),
+			self::FREQUENCY_EIGHTHOURS  => __( '8 Hours', 'bigcommerce' ),
+			self::FREQUENCY_TWELVEHOURS  => __( '12 Hours', 'bigcommerce' ),
 			self::FREQUENCY_DAILY   => __( 'Day', 'bigcommerce' ),
 			self::FREQUENCY_WEEKLY  => __( 'Week', 'bigcommerce' ),
 			self::FREQUENCY_MONTHLY => __( 'Month', 'bigcommerce' ),
@@ -350,6 +440,68 @@ class Import extends Settings_Section {
 			esc_html( __( "Import processing in parallel for fetching listings, products, channel initialization", 'bigcommerce' ) )
 		);
 		echo '</fieldset>';
+	}
+
+	public function render_product_deletion_select() {
+
+        $value   = get_option( self::PRODUCT_DELETION_BEHAVIOR, '' );
+        $choices = [
+            '' => 'Disabled',
+            'draft' => 'Draft',
+            'delete' => 'Delete',
+            'trash' => 'Trash'
+        ];
+
+        $options = [];
+        foreach ( $choices as $key => $label ) {
+            $options[] = sprintf( '<option value="%s" %s>%s</option>', esc_attr( $key ), selected( $key, $value, false ), esc_html( $label ) );
+        }
+        printf( '<select id="field-%s" name="%s" class="regular-text bc-field-choices">%s</select>', esc_attr( self::PRODUCT_DELETION_BEHAVIOR ), esc_attr( self::PRODUCT_DELETION_BEHAVIOR ), implode( "\n", $options ) );
+
+        printf( '<p class="description">%s</p>', esc_html( __( 'Change the behavior of product removal during the import process. Choosing disabled or draft will prevent failed API calls from completely removing all information about a product and postmeta.', 'bigcommerce' ) ) );
+	}
+
+    public function render_product_bidir_sync_checkbox() {
+        $value     = (bool) get_option( self::ENABLE_PRODUCT_BIDIR_SYNC, false );
+        $checkbox  = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::ENABLE_PRODUCT_BIDIR_SYNC ), esc_attr( self::ENABLE_PRODUCT_BIDIR_SYNC ), checked( true, $value, false ));
+        $description = __( 'Allow plugin to push product changes made in WordPress back into BigCommerce.', 'bigcommerce' );
+        printf( '<p class="description">%s %s</p>', $checkbox, sprintf(
+            $description,
+            sprintf( '<a target="__blank" href="%s">', esc_url( 'https://login.bigcommerce.com/deep-links/manage/settings/store' ) ),
+            '</a>'
+        ) );
+    }
+
+	public function render_image_import_overwrite_checkbox() {
+		$value     = (bool) get_option( self::ENABLE_IMAGE_OVERWRITE_IMPORT, false );
+		$checkbox  = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::ENABLE_IMAGE_OVERWRITE_IMPORT ), esc_attr( self::ENABLE_IMAGE_OVERWRITE_IMPORT ), checked( true, $value, false ));
+			$description = __( 'Deletes existing images during import and reimports them from scratch. Useful when switching the Images Import from Import images URLs only to Full images import.', 'bigcommerce' );
+		printf( '<p class="description">%s %s</p>', $checkbox, sprintf(
+			$description,
+			sprintf( '<a target="__blank" href="%s">', esc_url( 'https://login.bigcommerce.com/deep-links/manage/settings/store' ) ),
+			'</a>'
+		) );
+	}
+
+	public function render_enable_product_force_refresh_checkbox() {
+		$value     = (bool) get_option( self::ENABLE_PRODUCT_FORCE_REFRESH, false );
+		$checkbox  = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::ENABLE_PRODUCT_FORCE_REFRESH ), esc_attr( self::ENABLE_PRODUCT_FORCE_REFRESH ), checked( true, $value, false ));
+		$description = __( 'Force Marks all Products for Product_Updater Strategy. Useful when things did not properly import on first go through.', 'bigcommerce' );
+		printf( '<p class="description">%s %s</p>', $checkbox, sprintf(
+			$description,
+			sprintf( '<a target="__blank" href="%s">', esc_url( 'https://login.bigcommerce.com/deep-links/manage/settings/store' ) ),
+			'</a>'
+		) );
+	}
+	public function render_enable_category_force_refresh_checkbox() {
+		$value     = (bool) get_option( self::ENABLE_CATEGORY_FORCE_REFRESH, false );
+		$checkbox  = sprintf( '<input id="field-%s" type="checkbox" value="1" class="regular-text code" name="%s" %s />', esc_attr( self::ENABLE_CATEGORY_FORCE_REFRESH ), esc_attr( self::ENABLE_CATEGORY_FORCE_REFRESH ), checked( true, $value, false ));
+		$description = __( 'Force Marks all Categories for Term_Updater Strategy. Useful when things did not properly import on first go through.', 'bigcommerce' );
+		printf( '<p class="description">%s %s</p>', $checkbox, sprintf(
+			$description,
+			sprintf( '<a target="__blank" href="%s">', esc_url( 'https://login.bigcommerce.com/deep-links/manage/settings/store' ) ),
+			'</a>'
+		) );
 	}
 
 }

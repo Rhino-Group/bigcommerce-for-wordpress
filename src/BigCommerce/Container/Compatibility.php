@@ -25,7 +25,7 @@ class Compatibility extends Provider {
 		$container[ self::TEMPLATES ] = function ( Container $container ) {
 			return new Template_Compatibility();
 		};
-		
+
 		$container[ self::THEME ] = function ( Container $container ) {
 			$factory = new Theme_Factory();
 
@@ -44,7 +44,7 @@ class Compatibility extends Provider {
 			$wc_cart = new WC_Cart( $container[ Api::FACTORY ]->cart() );
 			return new Facade( $wc_cart );
 		};
-		
+
 		$container[ self::SPAM_CHECKER ] = function ( Container $container ) {
 			return new Akismet();
 		};
@@ -52,27 +52,32 @@ class Compatibility extends Provider {
 		add_filter( 'page_template', $this->create_callback( 'page_template_override', function ( $template, $type, $templates ) use ( $container ) {
 			return $container[ self::TEMPLATES ]->override_page_template( $template, $type, $templates );
 		} ), 10, 3 );
-		
+
 		add_action( 'setup_theme', $this->create_callback( 'woo_compat_functions', function () use ( $container ) {
-			if ( filter_input( INPUT_GET, 'action', FILTER_SANITIZE_STRING ) === 'activate' && filter_input( INPUT_GET, 'plugin', FILTER_SANITIZE_STRING ) === 'woocommerce/woocommerce.php' ) {
+			$action = filter_input( INPUT_GET, 'action', FILTER_UNSAFE_RAW );
+			$plugin = filter_input( INPUT_GET, 'plugin', FILTER_UNSAFE_RAW );
+			$action = is_string( $action ) ? sanitize_text_field( $action ) : '';
+			$plugin = is_string( $plugin ) ? sanitize_text_field( $plugin ) : '';
+
+			if ( 'activate' === $action && 'woocommerce/woocommerce.php' === $plugin ) {
 				return;
 			}
 			include_once( dirname( $container[ 'plugin_file' ] ) . '/src/BigCommerce/Compatibility/woocommerce-functions.php' );
 
 			$container[ self::THEME ]->load_compat_functions();
 		} ), 10, 0 );
-		
+
 		add_action( 'wp', $this->create_callback( 'woo_compat_theme_flatsome_accounts_page_fix', function () {
 			if ( is_page( get_option( \BigCommerce\Pages\Account_Page::NAME, 0 ) ) ) {
 			    remove_filter( 'the_content', 'flatsome_contentfix' );
 			}
 		} ) );
-		
+
 		add_action( 'init', $this->create_callback( 'woo_compat_theme_flatsome_replace_wc_related_shortcodes', function () {
 			if ( get_option( 'template' ) !== 'flatsome') {
 				return;
 			}
-			
+
 			global $shortcode_tags;
 			foreach ( $shortcode_tags as $tag ) {
 				if ( is_string( $tag ) && strpos( $tag, 'ux_product' ) !== false ) {
@@ -80,7 +85,7 @@ class Compatibility extends Provider {
 				}
 			}
 		} ) );
-		
+
 		add_action( 'init', $this->create_callback( 'wordpress_4_dot_9', function () use ( $container ) {
 			if ( version_compare( $GLOBALS[ 'wp_version' ], '4.9', '<' ) ) {
 				include_once( dirname( $container[ 'plugin_file' ] ) . '/src/BigCommerce/Compatibility/wordpress-4-dot-9.php' );
@@ -92,7 +97,7 @@ class Compatibility extends Provider {
 				include_once( dirname( $container[ 'plugin_file' ] ) . '/src/BigCommerce/Compatibility/wordpress-5-dot-1.php' );
 			}
 		} ), 10, 0 );
-		
+
 		add_action( 'pre_option_woocommerce_myaccount_page_id', $this->create_callback( 'woo_compat_filter_myaccount_page_id', function () {
 			if ( is_user_logged_in() ) {
 				return get_option( Account_Page::NAME, 0 );

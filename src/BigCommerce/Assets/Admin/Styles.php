@@ -31,7 +31,6 @@ class Styles {
 
 		$css_src           = $this->directory . 'css/' . $css_file;
 		$gutenberg_css_src = $this->directory . 'css/' . $gutenberg_css_file;
-
 		wp_enqueue_style( 'bigcommerce-admin-styles', $css_src, [], $this->version );
 		wp_enqueue_style( 'bigcommerce-gutenberg-admin-styles', $gutenberg_css_src, [], $this->version );
 	}

@@ -6,6 +6,7 @@ use BigCommerce\Api\v3\Api\CatalogApi;
 use BigCommerce\Api\v3\Model;
 use BigCommerce\Import\Image_Importer;
 use BigCommerce\Import\Import_Strategy;
+use BigCommerce\Logging\Error_Log;
 use BigCommerce\Post_Types\Product\Product;
 use BigCommerce\Taxonomies\Availability\Availability;
 use BigCommerce\Taxonomies\Brand\Brand;
@@ -69,20 +70,29 @@ abstract class Product_Saver implements Import_Strategy {
 	 * @return int The imported post ID
 	 */
 	public function do_import() {
+		do_action( 'bigcommerce/import/log', Error_Log::NOTICE, __( 'Product ' . $this->product->getSku() . ' Beginning Import', 'bigcommerce' ),[] );
 		$builder = new Product_Builder( $this->product, $this->listing, $this->channel_term, $this->catalog );
 
 		$this->save_terms( $builder );
+		do_action( 'bigcommerce/import/log', Error_Log::NOTICE, __( 'Product ' . $this->product->getSku() . ' Assigned to Categories', 'bigcommerce' ),[] );
 		$this->save_wp_postmeta( $builder );
+		do_action( 'bigcommerce/import/log', Error_Log::NOTICE, __( 'Product ' . $this->product->getSku() . ' Post Meta Saved', 'bigcommerce' ),[] );
 		$this->save_wp_post( $builder );
 
 		$product = new Product( $this->post_id );
 		$product->update_source_data( $this->product );
 		$product->update_listing_data( $this->listing );
+		do_action( 'bigcommerce/import/log', Error_Log::NOTICE, __( 'Product ' . $this->product->getSku() . ' Updated Source/Listing Data', 'bigcommerce' ),[] );
+
 
 		$this->save_modifiers( $product );
+		do_action( 'bigcommerce/import/log', Error_Log::NOTICE, __( 'Product ' . $this->product->getSku() . ' Imported Modifiers', 'bigcommerce' ),[] );
 		$this->save_options( $product );
+		do_action( 'bigcommerce/import/log', Error_Log::NOTICE, __( 'Product ' . $this->product->getSku() . ' Imported Options', 'bigcommerce' ),[] );
 		$this->save_custom_fields( $product );
+		do_action( 'bigcommerce/import/log', Error_Log::NOTICE, __( 'Product ' . $this->product->getSku() . ' Imported Custom Fields', 'bigcommerce' ),[] );
 		$this->save_images( $builder );
+		do_action( 'bigcommerce/import/log', Error_Log::NOTICE, __( 'Product ' . $this->product->getSku() . ' Imported Images', 'bigcommerce' ),[] );
 
 		$this->send_notifications();
 
