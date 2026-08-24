@@ -1,4 +1,9 @@
 # Changelog
+## [6.1.4] - 2026-08-24
+
+### Fix
+- Fixed Absolute path values to old plugin name making some graphql requests not work.
+
 ## [6.1.3] - 2026-04-17
 
 ### Added
