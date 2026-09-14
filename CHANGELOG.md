@@ -1,4 +1,9 @@
 # Changelog
+## [6.1.5] - 2026-09-14
+
+### Added
+- Add link to product listing row that will force publish a product on its channel listing and in WP. This is a work-around for a BC limitation.
+
 ## [6.1.4] - 2026-08-24
 
 ### Fix

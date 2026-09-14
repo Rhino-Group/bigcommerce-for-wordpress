@@ -24,6 +24,7 @@ class Post_Types extends Provider {
 	const PRODUCT_ADMIN_LIST  = 'post_type.product.admin_list';
 	const PRODUCT_UNIQUE_SLUG = 'post_type.product.unique_slug';
 	const LISTING_RESET       = 'post_type.product.listing_reset';
+	const PRODUCT_PUBLISH     = 'post_type.product.publish_single';
 	const PRODUCT_RESYNC      = 'post_type.product.resync_single';
 	const PRODUCT_SEO         = 'post_type.product.seo';
 
@@ -306,6 +307,16 @@ class Post_Types extends Provider {
 		add_action( 'admin_post_' . Product\Single_Product_Sync::ACTION, $this->create_callback( 'handle_resync_product', function () use ( $container ) {
 			$container[ self::PRODUCT_RESYNC ]->handle_request();
 		} ), 10, 0 );
+
+        $container[ self::PRODUCT_PUBLISH ] = function ( Container $container ) {
+            return new Product\Single_Product_Publish($container[ Api::FACTORY ]->channels() );
+        };
+        add_filter( 'post_row_actions', $this->create_callback( 'post_row_publish', function ( $actions, $post ) use ( $container ) {
+            return $container[ self::PRODUCT_PUBLISH ]->add_row_action( $actions, $post );
+        } ), 10, 2 );
+        add_action( 'admin_post_' . Product\Single_Product_Publish::ACTION, $this->create_callback( 'handle_publish_product', function () use ( $container ) {
+            $container[ self::PRODUCT_PUBLISH ]->handle_request();
+        } ), 10, 0 );
 	}
 
 	private function product_channel_indicator( Container $container ) {
